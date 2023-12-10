@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [goulshat](https://up.htmlacademy.ru/ecmascript/22/user/1466653).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Лепешкин](https://htmlacademy.ru/profile/spearance).
 
 ---
 
