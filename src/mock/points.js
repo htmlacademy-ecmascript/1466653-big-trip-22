@@ -6,7 +6,7 @@ const Price = {
 };
 
 const defaultPoint = {
-  id: crypto.randomUUID(),
+  id: null,
   basePrice: 0,
   dateFrom: null,
   dateTo: null,

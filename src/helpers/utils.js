@@ -2,9 +2,7 @@ import dayjs from 'dayjs';
 // import duration from 'dayjs/plugin/duration';
 // import relativeTime from 'dayjs/plugin/relativeTime';
 
-// 30M
-// dayjs.extend(duration);
-// dayjs.extend(relativeTime);
+
 /* ---- RANDOM ELEMENTS ---- */
 const getRandomInteger = (min, max) => {
   const rand = min + Math.random() * (max + 1 - min);

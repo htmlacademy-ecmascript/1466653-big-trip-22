@@ -1,10 +1,9 @@
 import { OFFER_TYPES } from './const';
 import { getRandomArrayElement, getRandomInteger } from '../helpers/utils';
-import { createRandomDestination } from './destinations';
+import { createDestinations } from './destinations';
 import { createOffer } from './offers';
 import { createPoint } from './points';
 
-const DESTINATION_COUNT = 15;
 const OFFERS_COUNT = 7;
 const POINTS_COUNT = 10;
 
@@ -20,7 +19,7 @@ export default class MockService {
   }
 
   generateDestinations() {
-    return Array.from({ length: DESTINATION_COUNT}, () => createRandomDestination());
+    return createDestinations();
   }
 
   generateOffers() {

@@ -15,7 +15,6 @@ function createEventTemplate(point, destination, offers) {
   const startTimeText = getTimeText(point.dateFrom);
   const endTimeText = getTimeText(point.dateTo);
   const { minutes, hours, days } = getDuration(point.dateFrom, point.dateTo);
-  console.log("minutes: ", minutes, " hours:", hours, " days:", days);
 
   return `
   <li class="trip-events__item">

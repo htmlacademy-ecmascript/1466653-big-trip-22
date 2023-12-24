@@ -21,16 +21,20 @@ export default class TripsPresenter {
     render(new SortFormView(), this.mainContainer);
     render(this.eventsListComponent, this.mainContainer);
 
+    // создать новую точку маршрута
     render(new EventEditView({
       point: defaultPoint,
-      destination: null,
-      availableOffers: this.offersModel.getByType(this.points[0].type).offers,
+      selectedDestination: this.destinationsModel.getById(defaultPoint.destination),
+      destinations: this.destinationsModel.getDestinations(),
+      availableOffers: this.offersModel.getByType(defaultPoint.type).offers,
     }), this.eventsListComponent.getElement());
 
+    // редактирование существующей точки маршрута
     render(
       new EventEditView({
         point: this.points[0],
-        destination: this.destinationsModel.getById(this.points[0].destination),
+        selectedDestination: this.destinationsModel.getById(this.points[0].destination),
+        destinations: this.destinationsModel.getDestinations(),
         availableOffers: this.offersModel.getByType(this.points[0].type).offers,
         selectedOffers: this.offersModel.getByTypeAndIds(this.points[0].type, this.points[0].offers),
       }),
