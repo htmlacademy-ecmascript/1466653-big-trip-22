@@ -1,6 +1,8 @@
 /* --- DESTINATIONS --- */
-const CITIES = ['Chamonix', 'Paris', 'London', 'Moscow', 'Berlin', 'New York', 'San-Francisco', 'Dubai'];
-const DESCRIPTIONS = [
+const CITIES = ['Chamonix', 'Geneva', 'Paris', 'London', 'Moscow', 'Berlin', 'New York', 'San-Francisco', 'Dubai'];
+
+const CITY_DESCRIPTIONS = [
+  'Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.',
   'London is the capital and largest city of England and the United Kingdom, with a population of just under 9 million.',
   'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.',
   'Berlin is the capital and largest city of Germany by both area and population. Its more than 3.85 million inhabitants make it the European Union\'s most populous city, according to population within city limits',
@@ -10,15 +12,9 @@ const DESCRIPTIONS = [
   'San Francisco, officially the City and County of San Francisco, is the commercial, financial, and cultural center of Northern California',
   'Established in the 19th century as a small fishing village, Dubai grew into a regional trading hub from the early 20th century and grew rapidly in the late 20th and early 21st century with a focus on tourism and luxury, having the second most five-star hotels in the world, and the tallest building in the world, the Burj Khalifa, which is 828 metres (2,717 ft) tall.'
 ];
-const IMG_URLS = [
-  'https://storge.pic2.me/upload/639/5286d28cd7d35.jpg',
-  'https://blogdointercambio.stb.com.br/wp-content/uploads/2019/10/intercambio-em-san-francisco-1-1024x645-1000x600.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Aerial_view_of_Berlin_%2832881394137%29.jpg/1599px-Aerial_view_of_Berlin_%2832881394137%29.jpg',
-  'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AANyDeb.jpeg',
-  'https://www.mountvacationmedia.com/a/20590/w/8/o',
-  'https://photos.admiral.md/7740f44a43cb264bfe14705a63127eb9.jpg'
 
-];
+const IMG_URL = 'https://loremflickr.com/248/152?random=';
+
 const IMG_DESCRIPTIONS = [
   'Night view of the city',
   'Crowded streets of the city',
@@ -34,9 +30,11 @@ const OFFER_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-i
 const OFFER_TITLES = [
   'Upgrade to a business class',
   'Extra space',
-  'The best view',
-  'Priority service',
-  'Club members-only'
+  'Add luggage',
+  'Switch to comfort class',
+  'Add meal',
+  'Choose seats',
+  'Travel by train'
 ];
 
-export { CITIES, DESCRIPTIONS, IMG_URLS, IMG_DESCRIPTIONS, OFFER_TYPES, OFFER_TITLES };
+export { CITIES, CITY_DESCRIPTIONS, IMG_URL, IMG_DESCRIPTIONS, OFFER_TYPES, OFFER_TITLES };

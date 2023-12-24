@@ -1,27 +1,17 @@
-import { OFFER_TYPES, OFFER_TITLES } from './const';
+import { OFFER_TITLES } from './const';
 import { getRandomInteger, getRandomArrayElement } from '../helpers/utils';
 
-function getOffers() {
-  return OFFER_TYPES.map((item) => ({
-    type: item,
-    offers: [
-      {
-        id: Crypto.randomUUID(),
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(50, 200)
-      },
-      {
-        id: Crypto.randomUUID(),
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(50, 200)
-      },
-      {
-        id: Crypto.randomUUID(),
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(50, 200)
-      }
-    ]})
-  );
+const Price = {
+  MIN: 50,
+  MAX: 200,
+};
+
+function createOffer() {
+  return {
+    id: crypto.randomUUID(),
+    title: getRandomArrayElement(OFFER_TITLES),
+    price: getRandomInteger(Price.MIN, Price.MAX),
+  };
 }
 
-export { getOffers };
+export { createOffer };

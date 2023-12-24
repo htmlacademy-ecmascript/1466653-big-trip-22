@@ -1,59 +1,32 @@
-import { getRandomInteger, getRandomArrayElement } from '../helpers/utils';
-import { OFFER_TYPES } from './const';
+import { getRandomInteger, getRandomStartDate, getRandomEndDate } from '../helpers/utils';
 
-const points = [
-  {
-    id: Crypto.randomUUID(),
-    basePrice: getRandomInteger(1000, 1500),
-    dateFrom: '2023-09-10T22:55:56.845Z',
-    dateTo: '2023-09-24T11:22:13.375Z',
-    destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e04',
-    isFavorite: false,
-    offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa31'
-    ],
-    type: getRandomArrayElement(OFFER_TYPES),
-  },
-  {
-    id: Crypto.randomUUID(),
-    basePrice: getRandomInteger(1000, 1500),
-    dateFrom: '2023-09-20T22:55:56.845Z',
-    dateTo: '2023-09-24T11:22:13.375Z',
-    destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e04',
-    isFavorite: false,
-    offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa31'
-    ],
-    type: getRandomArrayElement(OFFER_TYPES),
-  },
-  {
-    id: Crypto.randomUUID(),
-    basePrice: getRandomInteger(1000, 1500),
-    dateFrom: '2023-10-20T22:55:56.845Z',
-    dateTo: '2023-10-30T11:22:13.375Z',
-    destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e04',
-    isFavorite: false,
-    offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa31'
-    ],
-    type: getRandomArrayElement(OFFER_TYPES),
-  },
-  {
-    id: Crypto.randomUUID(),
-    basePrice: getRandomInteger(1000, 1500),
-    dateFrom: '2023-09-25T22:55:56.845Z',
-    dateTo: '2023-10-14T11:22:13.375Z',
-    destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e04',
-    isFavorite: false,
-    offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa31'
-    ],
-    type: getRandomArrayElement(OFFER_TYPES),
-  }
-];
+const Price = {
+  MIN: 1000,
+  MAX: 2000,
+};
 
-function createPoints () {
-  return points;
+const defaultPoint = {
+  id: crypto.randomUUID(),
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  type: 'Flight',
+};
+
+function createPoint (destinationId, type, offerIds) {
+  return {
+    id: crypto.randomUUID(),
+    basePrice: getRandomInteger(Price.MIN, Price.MAX),
+    dateFrom: getRandomStartDate(),
+    dateTo: getRandomEndDate(),
+    destination: destinationId,
+    isFavorite: !!getRandomInteger(0, 1),
+    offers: offerIds,
+    type: type,
+  };
 }
 
-export { createPoints };
+export { defaultPoint, createPoint };
