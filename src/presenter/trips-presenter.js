@@ -6,49 +6,54 @@ import { render } from '../framework/render.js';
 import { defaultPoint } from '../mock/points.js';
 
 export default class TripsPresenter {
-  eventsListComponent = new EventsListView();
+  #mainContainer = null;
+  #pointsModel = null;
+  #destinationsModel = null;
+  #offersModel = null;
+  #eventsListComponent = new EventsListView();
+  #points = [];
 
   constructor({container, pointsModel, destinationsModel, offersModel}) {
-    this.mainContainer = container;
-    this.pointsModel = pointsModel;
-    this.destinationsModel = destinationsModel;
-    this.offersModel = offersModel;
+    this.#mainContainer = container;
+    this.#pointsModel = pointsModel;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   init() {
-    this.points = [...this.pointsModel.getPoints()];
+    this.#points = [...this.#pointsModel.points];
 
-    render(new SortFormView(), this.mainContainer);
-    render(this.eventsListComponent, this.mainContainer);
+    render(new SortFormView(), this.#mainContainer);
+    render(this.#eventsListComponent, this.#mainContainer);
 
     // создает новую точку маршрута
     render(new EventEditView({
       point: defaultPoint,
-      selectedDestination: this.destinationsModel.getById(defaultPoint.destination),
-      destinations: this.destinationsModel.getDestinations(),
-      availableOffers: this.offersModel.getByType(defaultPoint.type).offers,
-    }), this.eventsListComponent.element);
+      selectedDestination: this.#destinationsModel.getById(defaultPoint.destination),
+      destinations: this.#destinationsModel.destinations,
+      availableOffers: this.#offersModel.getByType(defaultPoint.type).offers,
+    }), this.#eventsListComponent.element);
 
     // редактирует существующую точку маршрута
     render(
       new EventEditView({
-        point: this.points[0],
-        selectedDestination: this.destinationsModel.getById(this.points[0].destination),
-        destinations: this.destinationsModel.getDestinations(),
-        availableOffers: this.offersModel.getByType(this.points[0].type).offers,
-        selectedOffers: this.offersModel.getByTypeAndIds(this.points[0].type, this.points[0].offers),
+        point: this.#points[0],
+        selectedDestination: this.#destinationsModel.getById(this.#points[0].destination),
+        destinations: this.#destinationsModel.destinations,
+        availableOffers: this.#offersModel.getByType(this.#points[0].type).offers,
+        selectedOffers: this.#offersModel.getByTypeAndIds(this.#points[0].type, this.#points[0].offers),
       }),
-      this.eventsListComponent.element
+      this.#eventsListComponent.element
     );
 
-    for (let i = 1; i < this.points.length; i++) {
-      const pointOffers = this.offersModel.getByTypeAndIds(this.points[i].type, this.points[i].offers);
+    for (let i = 1; i < this.#points.length; i++) {
+      const pointOffers = this.#offersModel.getByTypeAndIds(this.#points[i].type, this.#points[i].offers);
 
       render(new EventView({
-        point: this.points[i],
-        destination: this.destinationsModel.getById(this.points[i].destination),
+        point: this.#points[i],
+        destination: this.#destinationsModel.getById(this.#points[i].destination),
         offers: pointOffers,
-      }), this.eventsListComponent.element);
+      }), this.#eventsListComponent.element);
     }
   }
 }

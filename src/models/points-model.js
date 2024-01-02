@@ -1,9 +1,11 @@
 export default class PointsModel {
-  constructor (service) {
-    this.points = service.getPoints();
+  #points = [];
+
+  constructor (mockService) {
+    this.#points = mockService.points;
   }
 
-  getPoints() {
-    return this.points;
+  get points() {
+    return this.#points;
   }
 }
