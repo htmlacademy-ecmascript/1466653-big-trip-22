@@ -5,7 +5,7 @@ import EventEditView from '../view/event-edit-view.js';
 import { render } from '../framework/render.js';
 import { defaultPoint } from '../mock/points.js';
 
-export default class TripsPresenter {
+export default class BoardPresenter {
   #mainContainer = null;
   #pointsModel = null;
   #destinationsModel = null;
