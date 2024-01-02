@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import {
   getDateTimeFullText,
   getDateTimeShortText,
@@ -65,26 +65,15 @@ function createEventTemplate(point, destination, offers) {
   `;
 }
 
-export default class EventView {
+export default class EventView extends AbstractView {
   constructor({ point, destination, selectedOffers = [] }) {
+    super();
     this.point = point;
     this.destination = destination;
     this.offers = selectedOffers;
   }
 
-  getTemplate() {
+  get template() {
     return createEventTemplate(this.point, this.destination, this.offers);
-  }
-
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDateTimeFieldText } from '../helpers/utils.js';
 import { OFFER_TYPES } from '../mock/const.js';
 
@@ -139,8 +139,9 @@ function createEventEditTemplate(point, selectedDestination, allDestinations, av
   `;
 }
 
-export default class EventEditView {
+export default class EventEditView extends AbstractView {
   constructor({ point, selectedDestination, destinations, availableOffers, selectedOffers = [] }) {
+    super();
     this.point = point;
     this.allDestinations = destinations;
     this.availableOffers = availableOffers;
@@ -148,19 +149,7 @@ export default class EventEditView {
     this.selectedDestination = selectedDestination;
   }
 
-  getTemplate() {
+  get template() {
     return createEventEditTemplate(this.point, this.selectedDestination, this.allDestinations, this.availableOffers, this.selectedOffers);
-  }
-
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
