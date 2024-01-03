@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import {
   getDateTimeFullText,
   getDateTimeShortText,
@@ -65,26 +65,25 @@ function createEventTemplate(point, destination, offers) {
   `;
 }
 
-export default class EventView {
-  constructor({ point, destination, selectedOffers = [] }) {
-    this.point = point;
-    this.destination = destination;
-    this.offers = selectedOffers;
+//
+export default class EventView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #offers = null;
+  #onEditClick = null;
+
+  constructor({ point, destination, selectedOffers = [], onEditClick }) {
+    super();
+    this.#point = point;
+    this.#destination = destination;
+    this.#offers = selectedOffers;
+    this.#onEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
   }
 
-  getTemplate() {
-    return createEventTemplate(this.point, this.destination, this.offers);
-  }
 
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventTemplate(this.#point, this.#destination, this.#offers);
   }
 }

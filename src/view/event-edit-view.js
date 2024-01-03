@@ -1,5 +1,6 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDateTimeFieldText } from '../helpers/utils.js';
+import { defaultPoint } from '../mock/points.js';
 import { OFFER_TYPES } from '../mock/const.js';
 
 function createOfferTypeSelectorsTemplate() {
@@ -139,28 +140,34 @@ function createEventEditTemplate(point, selectedDestination, allDestinations, av
   `;
 }
 
-export default class EventEditView {
-  constructor({ point, selectedDestination, destinations, availableOffers, selectedOffers = [] }) {
-    this.point = point;
-    this.allDestinations = destinations;
-    this.availableOffers = availableOffers;
-    this.selectedOffers = selectedOffers;
-    this.selectedDestination = selectedDestination;
+export default class EventEditView extends AbstractView {
+  #point = null;
+  #allDestinations = [];
+  #availableOffers = [];
+  #selectedOffers = [];
+  #selectedDestination = null;
+  #handleSaveClick = null;
+
+  constructor({ point = defaultPoint, selectedDestination, destinations, availableOffers, selectedOffers = [], onFormSubmit }) {
+    super();
+    this.#point = point;
+    this.#allDestinations = destinations;
+    this.#availableOffers = availableOffers;
+    this.#selectedOffers = selectedOffers;
+    this.#selectedDestination = selectedDestination;
+    this.#handleSaveClick = onFormSubmit;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormSubmit);
   }
 
-  getTemplate() {
-    return createEventEditTemplate(this.point, this.selectedDestination, this.allDestinations, this.availableOffers, this.selectedOffers);
+  get template() {
+    return createEventEditTemplate(this.#point, this.#selectedDestination, this.#allDestinations, this.#availableOffers, this.selectedOffers);
   }
 
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.#handleSaveClick();
+  };
 }

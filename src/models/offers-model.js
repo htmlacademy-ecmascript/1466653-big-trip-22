@@ -1,14 +1,16 @@
 export default class OffersModel {
+  #offers = [];
+
   constructor (service) {
-    this.offers = service.getOffers();
+    this.#offers = service.offers;
   }
 
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
   getByType(type) {
-    return this.offers.find((offer) => offer.type === type);
+    return this.#offers.find((offer) => offer.type === type);
   }
 
   getByTypeAndIds(offerType, offerIds) {

@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 
 function createLoadingMessageTemplate() {
   return `
@@ -6,20 +6,8 @@ function createLoadingMessageTemplate() {
 `;
 }
 
-export default class LoadingMessageView {
-  getTemplate() {
+export default class LoadingMessageView extends AbstractView {
+  get template() {
     return createLoadingMessageTemplate();
-  }
-
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
