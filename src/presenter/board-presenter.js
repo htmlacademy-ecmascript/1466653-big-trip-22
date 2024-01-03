@@ -47,13 +47,17 @@ export default class BoardPresenter {
     );
 
     for (let i = 1; i < this.#points.length; i++) {
-      const pointOffers = this.#offersModel.getByTypeAndIds(this.#points[i].type, this.#points[i].offers);
-
-      render(new EventView({
-        point: this.#points[i],
-        destination: this.#destinationsModel.getById(this.#points[i].destination),
-        offers: pointOffers,
-      }), this.#eventsListComponent.element);
+      this.#renderEvent(this.#points[i]);
     }
+  }
+
+  #renderEvent(point) {
+    const pointOffers = this.#offersModel.getByTypeAndIds(point.type, point.offers);
+
+    render(new EventView({
+      point: point,
+      destination: this.#destinationsModel.getById(point.destination),
+      offers: pointOffers,
+    }), this.#eventsListComponent.element);
   }
 }
