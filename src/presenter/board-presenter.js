@@ -2,6 +2,7 @@ import SortFormView from '../view/sort-form-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
+import EventListEmptyView from '../view/event-list-empty.js';
 import { render, replace } from '../framework/render.js';
 import { isEscapeKey } from '../helpers/utils.js';
 
@@ -74,8 +75,12 @@ export default class BoardPresenter {
     render(this.#eventsListComponent, this.#mainContainer);
 
     // отрисовывает список точек маршрута
-    for (let i = 1; i < this.#points.length; i++) {
-      this.#renderEvent(this.#points[i]);
+    if (this.#points.length > 0) {
+      for (let i = 1; i < this.#points.length; i++) {
+        this.#renderEvent(this.#points[i]);
+      }
+    } else {
+      render(new EventListEmptyView(), this.#mainContainer);
     }
   }
 }
