@@ -34,7 +34,7 @@ export default class BoardPresenter {
 
     // компонент, отрисовывающий карточку события (точки)
     const eventComponent = new EventView({
-      point: point,
+      point,
       destination: this.#destinationsModel.getById(point.destination),
       offers: pointOffers,
       onEditClick: () => {
@@ -45,11 +45,11 @@ export default class BoardPresenter {
 
     // компонент, отрисовывающий форму редактирования события (точки)
     const eventEditComponent = new EventEditView({
-      point: this.#points[0],
-      selectedDestination: this.#destinationsModel.getById(this.#points[0].destination),
+      point,
+      selectedDestination: this.#destinationsModel.getById(point.destination),
       destinations: this.#destinationsModel.destinations,
-      availableOffers: this.#offersModel.getByType(this.#points[0].type).offers,
-      selectedOffers: this.#offersModel.getByTypeAndIds(this.#points[0].type, this.#points[0].offers),
+      availableOffers: this.#offersModel.getByType(point.type).offers,
+      selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
       onFormSubmit: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
