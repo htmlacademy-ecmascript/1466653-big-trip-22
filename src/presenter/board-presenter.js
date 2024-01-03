@@ -2,6 +2,7 @@ import SortFormView from '../view/sort-form-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
+import EventListEmptyView from '../view/event-list-empty.js';
 import { render, replace } from '../framework/render.js';
 import { isEscapeKey } from '../helpers/utils.js';
 
@@ -34,7 +35,7 @@ export default class BoardPresenter {
 
     // компонент, отрисовывающий карточку события (точки)
     const eventComponent = new EventView({
-      point: point,
+      point,
       destination: this.#destinationsModel.getById(point.destination),
       offers: pointOffers,
       onEditClick: () => {
@@ -45,11 +46,11 @@ export default class BoardPresenter {
 
     // компонент, отрисовывающий форму редактирования события (точки)
     const eventEditComponent = new EventEditView({
-      point: this.#points[0],
-      selectedDestination: this.#destinationsModel.getById(this.#points[0].destination),
+      point,
+      selectedDestination: this.#destinationsModel.getById(point.destination),
       destinations: this.#destinationsModel.destinations,
-      availableOffers: this.#offersModel.getByType(this.#points[0].type).offers,
-      selectedOffers: this.#offersModel.getByTypeAndIds(this.#points[0].type, this.#points[0].offers),
+      availableOffers: this.#offersModel.getByType(point.type).offers,
+      selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
       onFormSubmit: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
@@ -74,8 +75,12 @@ export default class BoardPresenter {
     render(this.#eventsListComponent, this.#mainContainer);
 
     // отрисовывает список точек маршрута
-    for (let i = 1; i < this.#points.length; i++) {
-      this.#renderEvent(this.#points[i]);
+    if (this.#points.length > 0) {
+      for (let i = 1; i < this.#points.length; i++) {
+        this.#renderEvent(this.#points[i]);
+      }
+    } else {
+      render(new EventListEmptyView(), this.#mainContainer);
     }
   }
 }
