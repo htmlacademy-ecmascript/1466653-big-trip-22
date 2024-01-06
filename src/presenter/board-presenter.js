@@ -21,13 +21,12 @@ export default class BoardPresenter {
 
   #renderEvent(point) {
     const eventPresenter = new EventPresenter({
-      point,
       container: this.#eventsListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
     });
 
-    eventPresenter.init();
+    eventPresenter.init(point);
   }
 
   #renderSortForm() {

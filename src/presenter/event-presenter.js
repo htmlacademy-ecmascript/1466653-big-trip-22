@@ -4,20 +4,18 @@ import { render, replace } from '../framework/render.js';
 import { isEscapeKey } from '../helpers/utils.js';
 
 export default class EventPresenter {
-  #point = null;
   #container = null;
   #destinationsModel = null;
   #offersModel = null;
 
-  constructor({point, container, destinationsModel, offersModel}) {
-    this.#point = point;
+  constructor({container, destinationsModel, offersModel}) {
     this.#container = container;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
   }
 
-  #renderEvent() {
-    const pointOffers = this.#offersModel.getByTypeAndIds(this.#point.type, this.#point.offers);
+  #renderEvent(point) {
+    const pointOffers = this.#offersModel.getByTypeAndIds(point.type, point.offers);
 
     // закрывает форму, отображает карточку на Esc
     const escKeyDownHandler = (evt) => {
@@ -30,25 +28,25 @@ export default class EventPresenter {
 
     // компонент, отрисовывающий карточку события (точки)
     const eventComponent = new EventView({
-      point: this.#point,
-      destination: this.#destinationsModel.getById(this.#point.destination),
+      point: point,
+      destination: this.#destinationsModel.getById(point.destination),
       offers: pointOffers,
       onEditClick: () => {
         replaceCardToForm();
         document.addEventListener('keydown', escKeyDownHandler);
       },
       onFavoriteClick: () => {
-        this.#point.isFavorite = !this.#point.isFavorite;
+        point.isFavorite = !point.isFavorite;
       },
     });
 
     // компонент, отрисовывающий форму редактирования события (точки)
     const eventEditComponent = new EventEditView({
-      point: this.#point,
-      selectedDestination: this.#destinationsModel.getById(this.#point.destination),
+      point: point,
+      selectedDestination: this.#destinationsModel.getById(point.destination),
       destinations: this.#destinationsModel.destinations,
-      availableOffers: this.#offersModel.getByType(this.#point.type).offers,
-      selectedOffers: this.#offersModel.getByTypeAndIds(this.#point.type, this.#point.offers),
+      availableOffers: this.#offersModel.getByType(point.type).offers,
+      selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
       onFormSubmit: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
@@ -66,7 +64,7 @@ export default class EventPresenter {
     render(eventComponent, this.#container);
   }
 
-  init() {
-    this.#renderEvent();
+  init(point) {
+    this.#renderEvent(point);
   }
 }
