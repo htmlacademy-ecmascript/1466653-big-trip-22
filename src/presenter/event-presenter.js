@@ -36,7 +36,10 @@ export default class EventPresenter {
       onEditClick: () => {
         replaceCardToForm();
         document.addEventListener('keydown', escKeyDownHandler);
-      }
+      },
+      onFavoriteClick: () => {
+        this.#point.isFavorite = !this.#point.isFavorite;
+      },
     });
 
     // компонент, отрисовывающий форму редактирования события (точки)
