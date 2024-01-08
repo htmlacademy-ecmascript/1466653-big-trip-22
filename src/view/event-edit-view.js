@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getDateTimeFieldText } from '../helpers/utils.js';
+import { getDateTimeFieldText } from '../helpers/dates.js';
 import { defaultPoint } from '../mock/points.js';
 import { OFFER_TYPES } from '../mock/const.js';
 

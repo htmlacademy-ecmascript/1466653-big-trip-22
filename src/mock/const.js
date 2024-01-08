@@ -1,3 +1,17 @@
+/* --- SORT TYPES --- */
+const FilterType = {
+  DEFAULT: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+const SortType = {
+  DEFAULT: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+};
+
 /* --- DESTINATIONS --- */
 const CITIES = new Map([
   ['Chamonix', 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.'],
@@ -35,4 +49,4 @@ const OFFER_TITLES = [
   'Travel by train'
 ];
 
-export { CITIES, IMG_URL, IMG_DESCRIPTIONS, OFFER_TYPES, OFFER_TITLES };
+export { FilterType, SortType, CITIES, IMG_URL, IMG_DESCRIPTIONS, OFFER_TYPES, OFFER_TITLES };

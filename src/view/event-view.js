@@ -5,7 +5,7 @@ import {
   getDateMonthText,
   getTimeText,
   getDuration
-} from '../helpers/utils';
+} from '../helpers/dates';
 
 function createEventTemplate(point, destination, offers) {
   const startDateText = getDateMonthText(point.dateFrom);
