@@ -3,6 +3,7 @@ import EventsListView from '../view/events-list-view.js';
 import EventPresenter from './event-presenter.js';
 import EventListEmptyView from '../view/event-list-empty.js';
 import { render } from '../framework/render.js';
+import { updateItem } from '../helpers/utils.js';
 
 export default class BoardPresenter {
   #mainContainer = null;
@@ -11,6 +12,7 @@ export default class BoardPresenter {
   #offersModel = null;
   #eventsListComponent = new EventsListView();
   #points = [];
+  #eventPresenters = new Map();
 
   constructor({container, pointsModel, destinationsModel, offersModel}) {
     this.#mainContainer = container;
@@ -24,9 +26,11 @@ export default class BoardPresenter {
       container: this.#eventsListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
+      onDataChange: this.#changeEvent,
     });
 
     eventPresenter.init(point);
+    this.#eventPresenters.set(point.id, eventPresenter);
   }
 
   #renderSortForm() {
@@ -45,6 +49,16 @@ export default class BoardPresenter {
       render(new EventListEmptyView(), this.#mainContainer);
     }
   }
+
+  #clearEventsList() {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+  }
+
+  #changeEvent = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#eventPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
 
   #renderBoard() {
     this.#renderSortForm();

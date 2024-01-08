@@ -10,11 +10,13 @@ export default class EventPresenter {
   #offersModel = null;
   #eventComponent = null;
   #eventEditComponent = null;
+  #handleDataChange = null;
 
-  constructor({container, destinationsModel, offersModel}) {
+  constructor({container, destinationsModel, offersModel, onDataChange}) {
     this.#container = container;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+    this.#handleDataChange = onDataChange;
   }
 
   #escKeyDownHandler = (evt) => {
@@ -33,6 +35,10 @@ export default class EventPresenter {
     replace(this.#eventComponent, this.#eventEditComponent);
   }
 
+  #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+  };
+
   init(point) {
     this.#point = point;
     const prevEventComponent = this.#eventComponent;
@@ -48,9 +54,7 @@ export default class EventPresenter {
         this.#replaceCardToForm();
         document.addEventListener('keydown', this.#escKeyDownHandler);
       },
-      onFavoriteClick: () => {
-        point.isFavorite = !point.isFavorite;
-      },
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
     // форма редактирования события (точки)
@@ -62,6 +66,7 @@ export default class EventPresenter {
       selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
       onFormSubmit: () => {
         this.#replaceFormToCard();
+        this.#handleDataChange(this.#point);
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       }
     });

@@ -72,7 +72,6 @@ export default class EventView extends AbstractView {
   #offers = null;
   #onEditClick = null;
   #onFavoriteClick = null;
-  // #favoriteButton = this.element.querySelector('.event__favorite-btn');
 
   constructor({ point, destination, selectedOffers = [], onEditClick, onFavoriteClick }) {
     super();
@@ -86,9 +85,9 @@ export default class EventView extends AbstractView {
     this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
   }
 
-  #favoriteClickHandler = () => {
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
     this.#onFavoriteClick();
-    this.element.querySelector('.event__favorite-btn').classList.toggle('event__favorite-btn--active');
   };
 
   get template() {

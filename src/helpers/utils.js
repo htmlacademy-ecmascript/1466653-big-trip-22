@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 // import relativeTime from 'dayjs/plugin/relativeTime';
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
+const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
 /* ---- RANDOM ELEMENTS ---- */
 const getRandomInteger = (min, max) => {
@@ -58,6 +59,7 @@ function getDuration(dateStart, dateEnd) {
 
 export {
   isEscapeKey,
+  updateItem,
   getRandomInteger,
   getRandomArrayElement,
   getRandomStartDate,
