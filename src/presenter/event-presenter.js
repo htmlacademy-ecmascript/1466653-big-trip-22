@@ -1,12 +1,15 @@
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
-import { render, replace } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import { isEscapeKey } from '../helpers/utils.js';
 
 export default class EventPresenter {
+  #point = null;
   #container = null;
   #destinationsModel = null;
   #offersModel = null;
+  #eventComponent = null;
+  #eventEditComponent = null;
 
   constructor({container, destinationsModel, offersModel}) {
     this.#container = container;
@@ -14,57 +17,74 @@ export default class EventPresenter {
     this.#offersModel = offersModel;
   }
 
-  #renderEvent(point) {
+  #escKeyDownHandler = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      this.#replaceFormToCard();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    }
+  };
+
+  #replaceCardToForm() {
+    replace(this.#eventEditComponent, this.#eventComponent);
+  }
+
+  #replaceFormToCard() {
+    replace(this.#eventComponent, this.#eventEditComponent);
+  }
+
+  init(point) {
+    this.#point = point;
+    const prevEventComponent = this.#eventComponent;
+    const prevEventEditComponent = this.#eventEditComponent;
     const pointOffers = this.#offersModel.getByTypeAndIds(point.type, point.offers);
 
-    // закрывает форму, отображает карточку на Esc
-    const escKeyDownHandler = (evt) => {
-      if (isEscapeKey(evt)) {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    // компонент, отрисовывающий карточку события (точки)
-    const eventComponent = new EventView({
+    // карточка события (точки)
+    this.#eventComponent = new EventView({
       point: point,
       destination: this.#destinationsModel.getById(point.destination),
       offers: pointOffers,
       onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
+        this.#replaceCardToForm();
+        document.addEventListener('keydown', this.#escKeyDownHandler);
       },
       onFavoriteClick: () => {
         point.isFavorite = !point.isFavorite;
       },
     });
 
-    // компонент, отрисовывающий форму редактирования события (точки)
-    const eventEditComponent = new EventEditView({
+    // форма редактирования события (точки)
+    this.#eventEditComponent = new EventEditView({
       point: point,
       selectedDestination: this.#destinationsModel.getById(point.destination),
       destinations: this.#destinationsModel.destinations,
       availableOffers: this.#offersModel.getByType(point.type).offers,
       selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
       onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
+        this.#replaceFormToCard();
+        document.removeEventListener('keydown', this.#escKeyDownHandler);
       }
     });
 
-    function replaceCardToForm() {
-      replace(eventEditComponent, eventComponent);
+    if (prevEventComponent === null || prevEventEditComponent === null) {
+      render(this.#eventComponent, this.#container);
+      return;
     }
 
-    function replaceFormToCard() {
-      replace(eventComponent, eventEditComponent);
+    if (this.#container.contains(prevEventComponent.element)) {
+      replace(this.#eventComponent, prevEventComponent);
     }
 
-    render(eventComponent, this.#container);
+    if (this.#container.contains(prevEventEditComponent.element)) {
+      replace(this.#eventEditComponent, prevEventEditComponent);
+    }
+
+    remove(prevEventComponent);
+    remove(prevEventEditComponent);
   }
 
-  init(point) {
-    this.#renderEvent(point);
+  destroy() {
+    remove(this.#eventComponent);
+    remove(this.#eventEditComponent);
   }
 }
