@@ -1,4 +1,5 @@
-import { getRandomInteger, getRandomStartDate, getRandomEndDate } from '../helpers/utils';
+import { getRandomInteger } from '../helpers/utils';
+import { getRandomStartDate, getRandomEndDate } from '../helpers/dates';
 
 const Price = {
   MIN: 1000,
