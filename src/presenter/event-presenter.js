@@ -3,7 +3,13 @@ import EventEditView from '../view/event-edit-view.js';
 import { render, replace, remove } from '../framework/render.js';
 import { isEscapeKey } from '../helpers/utils.js';
 
+const Mode = {
+  DEFAULT: 'PREVIEW',
+  EDITING: 'EDIT',
+};
+
 export default class EventPresenter {
+  #mode = Mode.DEFAULT;
   #point = null;
   #container = null;
   #destinationsModel = null;
@@ -11,12 +17,14 @@ export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #handleDataChange = null;
+  #handleModeChange = null;
 
-  constructor({container, destinationsModel, offersModel, onDataChange}) {
+  constructor({container, destinationsModel, offersModel, onDataChange, onModeChange}) {
     this.#container = container;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   #escKeyDownHandler = (evt) => {
@@ -29,10 +37,13 @@ export default class EventPresenter {
 
   #replaceCardToForm() {
     replace(this.#eventEditComponent, this.#eventComponent);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToCard() {
     replace(this.#eventComponent, this.#eventEditComponent);
+    this.#mode = Mode.DEFAULT;
   }
 
   #handleFavoriteClick = () => {
@@ -76,16 +87,22 @@ export default class EventPresenter {
       return;
     }
 
-    if (this.#container.contains(prevEventComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventComponent, prevEventComponent);
     }
 
-    if (this.#container.contains(prevEventEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#eventEditComponent, prevEventEditComponent);
     }
 
     remove(prevEventComponent);
     remove(prevEventEditComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
   }
 
   destroy() {
