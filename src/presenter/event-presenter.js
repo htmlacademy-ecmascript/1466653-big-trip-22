@@ -52,15 +52,16 @@ export default class EventPresenter {
 
   init(point) {
     this.#point = point;
+    const selectedDestination = this.#destinationsModel.getById(point.destination);
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
-    const pointOffers = this.#offersModel.getByTypeAndIds(point.type, point.offers);
 
     // карточка события (точки)
     this.#eventComponent = new EventView({
-      point: point,
-      destination: this.#destinationsModel.getById(point.destination),
-      offers: pointOffers,
+      point,
+      selectedDestination,
+      selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
+
       onEditClick: () => {
         this.#replaceCardToForm();
         document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -70,11 +71,11 @@ export default class EventPresenter {
 
     // форма редактирования события (точки)
     this.#eventEditComponent = new EventEditView({
-      point: point,
-      selectedDestination: this.#destinationsModel.getById(point.destination),
+      point,
+      selectedDestination,
       destinations: this.#destinationsModel.destinations,
       availableOffers: this.#offersModel.getByType(point.type).offers,
-      selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
+
       onFormSubmit: () => {
         this.#replaceFormToCard();
         this.#handleDataChange(this.#point);

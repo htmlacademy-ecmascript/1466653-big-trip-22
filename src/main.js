@@ -15,6 +15,7 @@ const mockService = new MockService();
 const destinationsModel = new DestinationsModel(mockService);
 const offersModel = new OffersModel(mockService);
 const pointsModel = new PointsModel(mockService);
+
 const boardPresenter = new BoardPresenter({
   container: tripEventsContainer,
   pointsModel,

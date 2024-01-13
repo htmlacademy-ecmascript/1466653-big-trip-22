@@ -5,7 +5,7 @@ import {
   getDateMonthText,
   getTimeText,
   getDuration
-} from '../helpers/utils';
+} from '../helpers/dates';
 
 function createEventTemplate(point, destination, offers) {
   const startDateText = getDateMonthText(point.dateFrom);
@@ -73,10 +73,10 @@ export default class EventView extends AbstractView {
   #onEditClick = null;
   #onFavoriteClick = null;
 
-  constructor({ point, destination, selectedOffers = [], onEditClick, onFavoriteClick }) {
+  constructor({ point, selectedDestination, selectedOffers = [], onEditClick, onFavoriteClick }) {
     super();
     this.#point = point;
-    this.#destination = destination;
+    this.#destination = selectedDestination;
     this.#offers = selectedOffers;
     this.#onEditClick = onEditClick;
     this.#onFavoriteClick = onFavoriteClick;

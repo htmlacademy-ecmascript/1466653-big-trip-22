@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getDateTimeFieldText } from '../helpers/utils.js';
+import { getDateTimeFieldText } from '../helpers/dates.js';
 import { defaultPoint } from '../mock/points.js';
 import { OFFER_TYPES } from '../mock/const.js';
 
@@ -132,7 +132,7 @@ function createEventEditTemplate(point, selectedDestination, allDestinations, av
       </header>
 
       <section class="event__details">
-        ${createAvailableOffersTemplate(availableOffers, selectedOffers)}
+        ${createAvailableOffersTemplate(availableOffers, point.offers)}
         ${createDestinationTemplate(selectedDestination)}
       </section>
     </form>
@@ -148,12 +148,12 @@ export default class EventEditView extends AbstractView {
   #selectedDestination = null;
   #handleSaveClick = null;
 
-  constructor({ point = defaultPoint, selectedDestination, destinations, availableOffers, selectedOffers = [], onFormSubmit }) {
+  constructor({ point = defaultPoint, selectedDestination, destinations, availableOffers, onFormSubmit }) {
     super();
     this.#point = point;
     this.#allDestinations = destinations;
     this.#availableOffers = availableOffers;
-    this.#selectedOffers = selectedOffers;
+    // this.#selectedOffers = selectedOffers;
     this.#selectedDestination = selectedDestination;
     this.#handleSaveClick = onFormSubmit;
 
@@ -163,7 +163,7 @@ export default class EventEditView extends AbstractView {
   }
 
   get template() {
-    return createEventEditTemplate(this.#point, this.#selectedDestination, this.#allDestinations, this.#availableOffers, this.selectedOffers);
+    return createEventEditTemplate(this.#point, this.#selectedDestination, this.#allDestinations, this.#availableOffers);
   }
 
   #onFormSubmit = (evt) => {
