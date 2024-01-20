@@ -74,7 +74,7 @@ export default class EventPresenter {
       point,
       selectedDestination,
       destinations: this.#destinationsModel.destinations,
-      availableOffers: this.#offersModel.getByType(point.type).offers,
+      offers: this.#offersModel.offers,
 
       onFormSubmit: () => {
         this.#replaceFormToCard();
