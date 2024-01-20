@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDateTimeFieldText } from '../helpers/dates.js';
 import { defaultPoint } from '../mock/points.js';
 import { OFFER_TYPES } from '../mock/const.js';
@@ -6,7 +6,7 @@ import { OFFER_TYPES } from '../mock/const.js';
 function createOfferTypeSelectorsTemplate() {
   return OFFER_TYPES.map((offerType) => `
   <div class="event__type-item">
-    <input id="event-type-${offerType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType.toLowerCase()}">
+    <input id="event-type-${offerType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType}">
     <label class="event__type-label  event__type-label--${offerType.toLowerCase()}" for="event-type-${offerType.toLowerCase()}-1">${offerType}</label>
   </div>
   `).join('');
@@ -71,10 +71,12 @@ function createDestinationTemplate(destination) {
     </section>`;
 }
 
-function createEventEditTemplate(point, selectedDestination, allDestinations, availableOffers, selectedOffers) {
+function createEventEditTemplate(point, allDestinations, allOffers) {
   const startDateTimeText = getDateTimeFieldText(point.dateFrom);
   const endDateTimeText = getDateTimeFieldText(point.dateTo);
   const pointId = point.id || 0;
+  const selectedDestination = allDestinations.find((item) => item.id === point.destination);
+  const availableTypeOffers = allOffers.find((item) => item.type === point.type)?.offers || [];
 
   return `
   <li class="trip-events__item">
@@ -132,7 +134,7 @@ function createEventEditTemplate(point, selectedDestination, allDestinations, av
       </header>
 
       <section class="event__details">
-        ${createAvailableOffersTemplate(availableOffers, point.offers)}
+        ${createAvailableOffersTemplate(availableTypeOffers, point.offers)}
         ${createDestinationTemplate(selectedDestination)}
       </section>
     </form>
@@ -140,34 +142,71 @@ function createEventEditTemplate(point, selectedDestination, allDestinations, av
   `;
 }
 
-export default class EventEditView extends AbstractView {
+export default class EventEditView extends AbstractStatefulView {
   #point = null;
-  #allDestinations = [];
-  #availableOffers = [];
-  #selectedOffers = [];
   #selectedDestination = null;
+  #offers = [];
+  #destinations = [];
   #handleSaveClick = null;
 
-  constructor({ point = defaultPoint, selectedDestination, destinations, availableOffers, onFormSubmit }) {
+  constructor({ point = defaultPoint, selectedDestination, destinations, offers, onFormSubmit }) {
     super();
     this.#point = point;
-    this.#allDestinations = destinations;
-    this.#availableOffers = availableOffers;
-    // this.#selectedOffers = selectedOffers;
+    this._state = EventEditView.parsePointToState(point);
     this.#selectedDestination = selectedDestination;
+    this.#destinations = destinations;
+    this.#offers = offers;
     this.#handleSaveClick = onFormSubmit;
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSubmit);
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#onFormSubmit);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormSubmit);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEventEditTemplate(this.#point, this.#selectedDestination, this.#allDestinations, this.#availableOffers);
+    return createEventEditTemplate(this._state, this.#destinations, this.#offers);
+  }
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
+    // destinationChange
   }
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
     this.#handleSaveClick();
   };
+
+  #onTypeChange = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.value,
+    });
+  };
+
+  #onDestinationChange = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      destination: evt.target.value,
+    });
+  };
+
+  #onPriceChange = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      basePrice: evt.target.value,
+    });
+  };
+
+  static parsePointToState(point) {
+    return {
+      ...point,
+    };
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+    return point;
+  }
 }
