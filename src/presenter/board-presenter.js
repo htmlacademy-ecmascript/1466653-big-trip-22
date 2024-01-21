@@ -13,8 +13,8 @@ export default class BoardPresenter {
   #destinationsModel = null;
   #offersModel = null;
   #eventsListComponent = new EventsListView();
-  #points = [];
-  #localPoints = [];
+  // #points = [];
+  // #localPoints = [];
   #eventPresenters = new Map();
   #sortComponent = null;
   #currentSortType = SortType.DEFAULT;
@@ -27,7 +27,14 @@ export default class BoardPresenter {
   }
 
   get points() {
-    return this.#pointsModel.points;
+    switch (this.#currentSortType) {
+      case SortType.PRICE:
+        return [...this.#pointsModel.points].sort(sortEventsByPrice);
+      case SortType.TIME:
+        return [...this.#pointsModel.points].sort(sortEventsByTime);
+      default:
+        return [...this.#pointsModel.points];
+    }
   }
 
   get destinations() {
@@ -39,8 +46,6 @@ export default class BoardPresenter {
   }
 
   #changeEvent = (updatedPoint) => {
-    this.#points = updateItem(this.#points, updatedPoint);
-    this.#localPoints = updateItem(this.#points, updatedPoint);
     this.#eventPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 
@@ -49,17 +54,6 @@ export default class BoardPresenter {
   };
 
   #sortEvents(sortType) {
-    switch (sortType) {
-      case SortType.PRICE:
-        this.#localPoints.sort(sortEventsByPrice);
-        break;
-      case SortType.TIME:
-        this.#localPoints.sort(sortEventsByTime);
-        break;
-      default:
-        this.#localPoints = [...this.#points];
-    }
-
     this.#currentSortType = sortType;
   }
 
@@ -75,6 +69,8 @@ export default class BoardPresenter {
 
   #renderEvent(point) {
     const eventPresenter = new EventPresenter({
+      // что передавать - модельки или массивы?
+      // если модельки, то можно использовать функции для фильтрации, объявленные там
       container: this.#eventsListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
@@ -98,9 +94,9 @@ export default class BoardPresenter {
   #renderEventsList() {
     render(this.#eventsListComponent, this.#mainContainer);
 
-    if (this.#localPoints.length > 0) {
-      for (let i = 1; i < this.#localPoints.length; i++) {
-        this.#renderEvent(this.#localPoints[i]);
+    if (this.points.length > 0) {
+      for (let i = 1; i < this.points.length; i++) {
+        this.#renderEvent(this.points[i]);
       }
     } else {
       render(new EventListEmptyView(), this.#mainContainer);
@@ -118,9 +114,6 @@ export default class BoardPresenter {
   }
 
   init() {
-    this.#points = [...this.#pointsModel.points];
-    this.#localPoints = [...this.#pointsModel.points];
-
     this.#renderBoard();
   }
 }
