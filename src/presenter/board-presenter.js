@@ -26,6 +26,18 @@ export default class BoardPresenter {
     this.#offersModel = offersModel;
   }
 
+  get points() {
+    return this.#pointsModel.points;
+  }
+
+  get destinations() {
+    return this.#destinationsModel.destinations;
+  }
+
+  get offers() {
+    return this.#offersModel.offers;
+  }
+
   #changeEvent = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
     this.#localPoints = updateItem(this.#points, updatedPoint);
