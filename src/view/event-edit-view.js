@@ -2,6 +2,9 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDateTimeFieldText } from '../helpers/dates.js';
 import { defaultPoint } from '../mock/points.js';
 import { OFFER_TYPES } from '../mock/const.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createOfferTypeSelectorsTemplate() {
   return OFFER_TYPES.map((offerType) => `
@@ -148,6 +151,9 @@ export default class EventEditView extends AbstractStatefulView {
   #offers = [];
   #destinations = [];
   #handleSaveClick = null;
+  #datepickerStart = null;
+  #datepickerEnd = null;
+  #onDateChangeHandler = null;
 
   constructor({ point = defaultPoint, selectedDestination, destinations, offers, onFormSubmit }) {
     super();
@@ -171,6 +177,29 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormSubmit);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     // destinationChange
+
+    this.#setCalendarStart();
+    this.#setCalendarEnd();
+  }
+
+  #setCalendarStart () {
+    this.#datepickerStart = flatpickr(this.element.querySelectorAll('.event__input--time')[0], {
+      dateFormat: 'd/m/y',
+      minDate: new Date(),
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      onChange: this.#onDateStartChangeHandler,
+    });
+  }
+
+  #setCalendarEnd () {
+    this.#datepickerEnd = flatpickr(this.element.querySelectorAll('.event__input--time')[1], {
+      dateFormat: 'd/m/y',
+      minDate: this.#datepickerStart.selectedDates[0] || new Date(),
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      onChange: this.#onDateEndChangeHandler,
+    });
   }
 
   #onFormSubmit = (evt) => {
@@ -198,6 +227,25 @@ export default class EventEditView extends AbstractStatefulView {
       basePrice: evt.target.value,
     });
   };
+
+  #onDateStartChangeHandler = ([date]) => {
+    this.updateElement({dateFrom: date});
+    this.#datepickerEnd.destroy();
+    this.#setCalendarEnd();
+  };
+
+  #onDateEndChangeHandler = ([date]) => {
+    this.updateElement({dateTo: date});
+  };
+
+  removeElement() {
+    super.removeElement();
+
+    this.#datepickerStart.destroy();
+    this.#datepickerEnd.destroy();
+    this.#datepickerStart = null;
+    this.#datepickerEnd = null;
+  }
 
   static parsePointToState(point) {
     return {
