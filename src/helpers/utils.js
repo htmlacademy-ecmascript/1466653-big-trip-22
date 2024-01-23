@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
-const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+// const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
 /* ---- SORTING ----- */
 const sortEventsByPrice = (previousEvent, nextEvent) => (nextEvent.basePrice - previousEvent.basePrice);
@@ -22,7 +22,7 @@ const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length 
 
 export {
   isEscapeKey,
-  updateItem,
+  // updateItem,
   sortEventsByPrice,
   sortEventsByTime,
   getRandomInteger,

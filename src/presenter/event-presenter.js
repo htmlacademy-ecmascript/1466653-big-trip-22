@@ -2,6 +2,7 @@ import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import { render, replace, remove } from '../framework/render.js';
 import { isEscapeKey } from '../helpers/utils.js';
+import { UserAction, UpdateType } from './../mock/const.js';
 
 const Mode = {
   DEFAULT: 'PREVIEW',
@@ -47,7 +48,11 @@ export default class EventPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite,},
+    );
   };
 
   init(point) {
@@ -78,7 +83,11 @@ export default class EventPresenter {
 
       onFormSubmit: () => {
         this.#replaceFormToCard();
-        this.#handleDataChange(this.#point);
+        this.#handleDataChange(
+          UserAction.UPDATE_TASK,
+          UpdateType.MINOR,
+          this.#point,
+        );
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       }
     });

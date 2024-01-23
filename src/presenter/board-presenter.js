@@ -2,9 +2,9 @@ import SortFormView from '../view/sort-form-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventPresenter from './event-presenter.js';
 import EventListEmptyView from '../view/event-list-empty.js';
-import { render } from '../framework/render.js';
-import { updateItem } from '../helpers/utils.js';
-import { SortType } from '../mock/const';
+import { render, remove } from '../framework/render.js';
+// import { updateItem } from '../helpers/utils.js';
+import { SortType, UpdateType, UserAction } from '../mock/const';
 import { sortEventsByTime, sortEventsByPrice } from '../helpers/utils.js';
 
 export default class BoardPresenter {
@@ -13,8 +13,6 @@ export default class BoardPresenter {
   #destinationsModel = null;
   #offersModel = null;
   #eventsListComponent = new EventsListView();
-  // #points = [];
-  // #localPoints = [];
   #eventPresenters = new Map();
   #sortComponent = null;
   #currentSortType = SortType.DEFAULT;
@@ -45,8 +43,40 @@ export default class BoardPresenter {
     return this.#offersModel.offers;
   }
 
-  #changeEvent = (updatedPoint) => {
-    this.#eventPresenters.get(updatedPoint.id).init(updatedPoint);
+  #handleViewAction = (actionType, updateType, dataToUpdate) => {
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this.#pointsModel.updatePoint(updateType, dataToUpdate);
+        break;
+      case UserAction.ADD_EVENT:
+        this.#pointsModel.addPoint(updateType, dataToUpdate);
+        break;
+      case UserAction.DELETE_EVENT:
+        this.#pointsModel.deletePoint(updateType, dataToUpdate);
+        break;
+    }
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      // - обновить часть списка (например, когда поменялось описание)
+      case UpdateType.PATCH:
+        this.#eventPresenters.get(data.id).init(data);
+        break;
+      // - обновить список (например, когда задача ушла в архив)
+      case UpdateType.MINOR:
+        this.#clearEventsList();
+        this.#renderEventsList();
+        break;
+      // - обновить всю доску (например, при переключении фильтра)
+      case UpdateType.MAJOR:
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+    }
   };
 
   #handleModeChange = () => {
@@ -74,7 +104,7 @@ export default class BoardPresenter {
       container: this.#eventsListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
-      onDataChange: this.#changeEvent,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });
 
@@ -106,6 +136,11 @@ export default class BoardPresenter {
   #clearEventsList() {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
+  }
+
+  #clearBoard() {
+    remove(this.#sortComponent);
+    remove(this.#eventPresenters);
   }
 
   #renderBoard() {
