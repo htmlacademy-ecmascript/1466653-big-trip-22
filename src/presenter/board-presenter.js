@@ -4,7 +4,7 @@ import EventPresenter from './event-presenter.js';
 import EventListEmptyView from '../view/event-list-empty.js';
 import { render, remove } from '../framework/render.js';
 import { filter } from '../helpers/utils.js';
-import { SortType, UpdateType, UserAction } from '../mock/const';
+import { FilterType, SortType, UpdateType, UserAction } from '../mock/const';
 import { sortEventsByTime, sortEventsByPrice, sortEventsByDate } from '../helpers/utils.js';
 
 export default class BoardPresenter {
@@ -16,7 +16,9 @@ export default class BoardPresenter {
   #eventsListComponent = new EventsListView();
   #eventPresenters = new Map();
   #sortComponent = null;
+  #noEventsComponent = null;
   #currentSortType = SortType.DEFAULT;
+  #currentFilter = FilterType.DEFAULT;
 
   constructor({container, pointsModel, destinationsModel, offersModel, filterModel}) {
     this.#mainContainer = container;
@@ -30,9 +32,9 @@ export default class BoardPresenter {
   }
 
   get points() {
-    const filterType = this.#filterModel.filter;
+    this.#currentFilter = this.#filterModel.filter;
     const points = this.#pointsModel.points;
-    const filteredPoints = filter[filterType](points);
+    const filteredPoints = filter[this.#currentFilter](points);
 
     switch (this.#currentSortType) {
       case SortType.PRICE:
@@ -137,8 +139,14 @@ export default class BoardPresenter {
         this.#renderEvent(this.points[i]);
       }
     } else {
-      render(new EventListEmptyView(), this.#mainContainer);
+      this.#renderNoEventsComponent();
     }
+  }
+
+  #renderNoEventsComponent() {
+    this.#noEventsComponent = new EventListEmptyView({ filterType: this.#currentFilter });
+
+    render(this.#noEventsComponent, this.#mainContainer);
   }
 
   #clearEventsList() {
@@ -153,6 +161,10 @@ export default class BoardPresenter {
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
+    }
+
+    if (this.#noEventsComponent) {
+      remove(this.#noEventsComponent);
     }
   }
 
