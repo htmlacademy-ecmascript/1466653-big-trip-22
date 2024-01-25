@@ -22,6 +22,8 @@ export default class BoardPresenter {
     this.#pointsModel = pointsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+
+    this.#pointsModel.addObserver(this.#handlePointsModelEvent);
   }
 
   get points() {
@@ -46,7 +48,6 @@ export default class BoardPresenter {
   #handleViewAction = (actionType, updateType, dataToUpdate) => {
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
         this.#pointsModel.updatePoint(updateType, dataToUpdate);
@@ -60,11 +61,11 @@ export default class BoardPresenter {
     }
   };
 
-  #handleModelEvent = (updateType, data) => {
+  #handlePointsModelEvent = (updateType, pointToUpdate) => {
     switch (updateType) {
       // - обновить часть списка (например, когда поменялось описание)
       case UpdateType.PATCH:
-        this.#eventPresenters.get(data.id).init(data);
+        this.#eventPresenters.get(pointToUpdate.id).init(pointToUpdate);
         break;
       // - обновить список (например, когда задача ушла в архив)
       case UpdateType.MINOR:

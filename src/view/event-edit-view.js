@@ -150,12 +150,14 @@ export default class EventEditView extends AbstractStatefulView {
   #selectedDestination = null;
   #offers = [];
   #destinations = [];
-  #handleSaveClick = null;
   #datepickerStart = null;
   #datepickerEnd = null;
   #onDateChangeHandler = null;
+  #handleSaveClick = null;
+  #handleResetClick = null;
+  #handleDeleteClick = null;
 
-  constructor({ point = defaultPoint, selectedDestination, destinations, offers, onFormSubmit }) {
+  constructor({ point = defaultPoint, selectedDestination, destinations, offers, onFormSubmit, onFormReset, onEventDelete }) {
     super();
     this.#point = point;
     this._state = EventEditView.parsePointToState(point);
@@ -163,6 +165,8 @@ export default class EventEditView extends AbstractStatefulView {
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleSaveClick = onFormSubmit;
+    this.#handleResetClick = onFormReset;
+    this.#handleDeleteClick = onEventDelete;
 
     this._restoreHandlers();
   }
@@ -172,9 +176,9 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#handleResetClick);
     this.element.querySelector('.event__save-btn').addEventListener('click', this.#onFormSubmit);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteEvent);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     // destinationChange
 
@@ -205,6 +209,11 @@ export default class EventEditView extends AbstractStatefulView {
   #onFormSubmit = (evt) => {
     evt.preventDefault();
     this.#handleSaveClick();
+  };
+
+  #onDeleteEvent = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick();
   };
 
   #onTypeChange = (evt) => {

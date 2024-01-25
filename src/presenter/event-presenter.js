@@ -84,7 +84,22 @@ export default class EventPresenter {
       onFormSubmit: () => {
         this.#replaceFormToCard();
         this.#handleDataChange(
-          UserAction.UPDATE_TASK,
+          UserAction.UPDATE_EVENT,
+          UpdateType.MINOR,
+          this.#point,
+        );
+        document.removeEventListener('keydown', this.#escKeyDownHandler);
+      },
+
+      onFormReset: () => {
+        this.#replaceFormToCard();
+        document.removeEventListener('keydown', this.#escKeyDownHandler);
+      },
+
+      onEventDelete: () => {
+        this.#replaceFormToCard();
+        this.#handleDataChange(
+          UserAction.DELETE_EVENT,
           UpdateType.MINOR,
           this.#point,
         );
