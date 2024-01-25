@@ -5,7 +5,7 @@ import EventListEmptyView from '../view/event-list-empty.js';
 import { render, remove } from '../framework/render.js';
 // import { updateItem } from '../helpers/utils.js';
 import { SortType, UpdateType, UserAction } from '../mock/const';
-import { sortEventsByTime, sortEventsByPrice } from '../helpers/utils.js';
+import { sortEventsByTime, sortEventsByPrice, sortEventsByDate } from '../helpers/utils.js';
 
 export default class BoardPresenter {
   #mainContainer = null;
@@ -33,7 +33,7 @@ export default class BoardPresenter {
       case SortType.TIME:
         return [...this.#pointsModel.points].sort(sortEventsByTime);
       default:
-        return [...this.#pointsModel.points];
+        return [...this.#pointsModel.points].sort(sortEventsByDate);
     }
   }
 
@@ -139,9 +139,15 @@ export default class BoardPresenter {
     this.#eventPresenters.clear();
   }
 
-  #clearBoard() {
+  #clearBoard(resetSortType = false) {
+    this.#clearEventsList();
+
     remove(this.#sortComponent);
     remove(this.#eventPresenters);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
   }
 
   #renderBoard() {

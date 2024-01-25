@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
-// const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
 /* ---- SORTING ----- */
 const sortEventsByPrice = (previousEvent, nextEvent) => (nextEvent.basePrice - previousEvent.basePrice);
@@ -11,6 +10,7 @@ const sortEventsByTime = (previousEvent, nextEvent) => {
 
   return (nextEventDuration - previousEventDuration);
 };
+const sortEventsByDate = (previousEvent, nextEvent) => dayjs(previousEvent.dateFrom).diff((nextEvent.dateFrom));
 
 /* ---- RANDOM ELEMENTS ---- */
 const getRandomInteger = (min, max) => {
@@ -22,9 +22,9 @@ const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length 
 
 export {
   isEscapeKey,
-  // updateItem,
   sortEventsByPrice,
   sortEventsByTime,
+  sortEventsByDate,
   getRandomInteger,
   getRandomArrayElement,
 };
