@@ -1,27 +1,20 @@
 import AbstractView from '../framework/view/abstract-view';
 
-function createTripFiltersTemplate() {
+function createTripFilterItemTemplate (filterType, activeFilter) {
+  return `
+    <div class="trip-filters__filter">
+      <input id="filter-${filterType}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filterType}" checked="${filterType === activeFilter}">
+      <label class="trip-filters__filter-label" for="filter-${filterType}">${filterType}</label>
+    </div>
+  `;
+}
+
+function createTripFiltersTemplate(filters, activeFilter) {
+  console.log("createTripFiltersTemplate - filters", filters);
+  // возвращает массив объектов с типом фильтра и количеством отфильтрованных событий
   return `
   <form class="trip-filters" action="#" method="get">
-    <div class="trip-filters__filter">
-      <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything">
-      <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
-    </div>
-
-    <div class="trip-filters__filter">
-      <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future">
-      <label class="trip-filters__filter-label" for="filter-future">Future</label>
-    </div>
-
-    <div class="trip-filters__filter">
-      <input id="filter-present" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="present">
-      <label class="trip-filters__filter-label" for="filter-present">Present</label>
-    </div>
-
-    <div class="trip-filters__filter">
-      <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past" checked>
-      <label class="trip-filters__filter-label" for="filter-past">Past</label>
-    </div>
+    ${filters.map((item) => createTripFilterItemTemplate(item.type, activeFilter)).join('')}
 
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>
@@ -29,7 +22,18 @@ function createTripFiltersTemplate() {
 }
 
 export default class TripFiltersView extends AbstractView {
+  #filters = [];
+  #activeFilterType = null;
+  #filterTypeChangeHandler = null;
+
+  constructor({ filters, currentFilterType, onFilterTypeChange }) {
+    super();
+    this.#filters = filters;
+    this.#activeFilterType = currentFilterType;
+    this.#filterTypeChangeHandler = onFilterTypeChange;
+  }
+
   get template() {
-    return createTripFiltersTemplate();
+    return createTripFiltersTemplate(this.#filters, this.#activeFilterType);
   }
 }

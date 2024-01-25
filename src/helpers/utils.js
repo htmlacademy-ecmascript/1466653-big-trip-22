@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { FilterType } from './../mock/const';
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
@@ -14,6 +15,14 @@ const sortEventsByTime = (previousEvent, nextEvent) => {
 };
 const sortEventsByDate = (previousEvent, nextEvent) => dayjs(previousEvent.dateFrom).diff((nextEvent.dateFrom));
 
+/* ---- FILTER ---- */
+const filter = {
+  [FilterType.DEFAULT]: (points) => points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => dayjs().isBefore(point.dateFrom, 'D')),
+  [FilterType.PRESENT]: (points) => points.filter((point) => dayjs().isAfter(point.dateFrom, 'D') && dayjs().isBefore(point.dateTo, 'D')),
+  [FilterType.PAST]: (points) => points.filter((point) => dayjs().isAfter(point.dateFrom, 'D') && dayjs().isAfter(point.dateTo, 'D')),
+};
+
 /* ---- RANDOM ELEMENTS ---- */
 const getRandomInteger = (min, max) => {
   const rand = min + Math.random() * (max + 1 - min);
@@ -23,6 +32,7 @@ const getRandomInteger = (min, max) => {
 const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length - 1)];
 
 export {
+  filter,
   isEscapeKey,
   isDatesEqual,
   isDurationEqual,
