@@ -5,7 +5,6 @@ export default class FilterModel extends Observable {
   #filter = FilterType.DEFAULT;
 
   get filter() {
-    console.log("FilterModel - get filter", this.#filter);
     return this.#filter;
   }
 

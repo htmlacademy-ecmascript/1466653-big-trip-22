@@ -150,7 +150,6 @@ export default class BoardPresenter {
     this.#clearEventsList();
 
     remove(this.#sortComponent);
-    remove(this.#eventPresenters);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
