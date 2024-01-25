@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+const isDurationEqual = (eventA, eventB) => dayjs(eventA.dateFrom).diff((eventA.dateTo)) === dayjs(eventB.dateFrom).diff((eventB.dateTo));
 
 /* ---- SORTING ----- */
 const sortEventsByPrice = (previousEvent, nextEvent) => (nextEvent.basePrice - previousEvent.basePrice);
@@ -22,6 +24,8 @@ const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length 
 
 export {
   isEscapeKey,
+  isDatesEqual,
+  isDurationEqual,
   sortEventsByPrice,
   sortEventsByTime,
   sortEventsByDate,

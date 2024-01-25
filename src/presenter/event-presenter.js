@@ -1,7 +1,7 @@
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import { render, replace, remove } from '../framework/render.js';
-import { isEscapeKey } from '../helpers/utils.js';
+import { isEscapeKey, isDatesEqual, isDurationEqual } from '../helpers/utils.js';
 import { UserAction, UpdateType } from './../mock/const.js';
 
 const Mode = {
@@ -81,30 +81,9 @@ export default class EventPresenter {
       destinations: this.#destinationsModel.destinations,
       offers: this.#offersModel.offers,
 
-      onFormSubmit: () => {
-        this.#replaceFormToCard();
-        this.#handleDataChange(
-          UserAction.UPDATE_EVENT,
-          UpdateType.MINOR,
-          this.#point,
-        );
-        document.removeEventListener('keydown', this.#escKeyDownHandler);
-      },
-
-      onFormReset: () => {
-        this.#replaceFormToCard();
-        document.removeEventListener('keydown', this.#escKeyDownHandler);
-      },
-
-      onEventDelete: () => {
-        this.#replaceFormToCard();
-        this.#handleDataChange(
-          UserAction.DELETE_EVENT,
-          UpdateType.MINOR,
-          this.#point,
-        );
-        document.removeEventListener('keydown', this.#escKeyDownHandler);
-      }
+      onFormSubmit: this.#handleFormSubmit,
+      onFormClose: this.#handleFormClose,
+      onEventDelete: this.#handleEventDelete,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -123,6 +102,33 @@ export default class EventPresenter {
     remove(prevEventComponent);
     remove(prevEventEditComponent);
   }
+
+  #handleFormSubmit = (pointToUpdate) => {
+    const isMinorUpdate =
+      !isDatesEqual(this.#point.dateFrom, pointToUpdate.dateFrom) ||
+      this.#point.basePrice !== pointToUpdate.basePrice ||
+      !isDurationEqual(this.#point, pointToUpdate);
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      this.#point,
+    );
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleEventDelete = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      point,
+    );
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleFormClose = () => {
+    this.#replaceFormToCard();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {

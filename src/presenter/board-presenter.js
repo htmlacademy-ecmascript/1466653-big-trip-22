@@ -63,16 +63,16 @@ export default class BoardPresenter {
 
   #handlePointsModelEvent = (updateType, pointToUpdate) => {
     switch (updateType) {
-      // - обновить часть списка (например, когда поменялось описание)
+      // - обновить часть списка
       case UpdateType.PATCH:
         this.#eventPresenters.get(pointToUpdate.id).init(pointToUpdate);
         break;
-      // - обновить список (например, когда задача ушла в архив)
+      // - обновить список
       case UpdateType.MINOR:
         this.#clearEventsList();
         this.#renderEventsList();
         break;
-      // - обновить всю доску (например, при переключении фильтра)
+      // - обновить всю доску - при переключении фильтра)
       case UpdateType.MAJOR:
         this.#clearBoard();
         this.#renderBoard();

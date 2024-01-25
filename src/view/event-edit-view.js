@@ -157,7 +157,7 @@ export default class EventEditView extends AbstractStatefulView {
   #handleResetClick = null;
   #handleDeleteClick = null;
 
-  constructor({ point = defaultPoint, selectedDestination, destinations, offers, onFormSubmit, onFormReset, onEventDelete }) {
+  constructor({ point = defaultPoint, selectedDestination, destinations, offers, onFormSubmit, onFormClose, onEventDelete }) {
     super();
     this.#point = point;
     this._state = EventEditView.parsePointToState(point);
@@ -165,7 +165,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleSaveClick = onFormSubmit;
-    this.#handleResetClick = onFormReset;
+    this.#handleResetClick = onFormClose;
     this.#handleDeleteClick = onEventDelete;
 
     this._restoreHandlers();
@@ -213,7 +213,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #onDeleteEvent = (evt) => {
     evt.preventDefault();
-    this.#handleDeleteClick();
+    this.#handleDeleteClick(EventEditView.parseStateToTask(this._state));
   };
 
   #onTypeChange = (evt) => {
