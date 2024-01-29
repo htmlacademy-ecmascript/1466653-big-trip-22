@@ -1,6 +1,7 @@
 import SortFormView from '../view/sort-form-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventPresenter from './event-presenter.js';
+import NewEventPresenter from './new-event-presenter.js';
 import EventListEmptyView from '../view/event-list-empty.js';
 import { render, remove } from '../framework/render.js';
 import { filter } from '../helpers/utils.js';
@@ -15,17 +16,26 @@ export default class BoardPresenter {
   #filterModel = null;
   #eventsListComponent = new EventsListView();
   #eventPresenters = new Map();
+  #newEventPresenter = null;
   #sortComponent = null;
   #noEventsComponent = null;
   #currentSortType = SortType.DEFAULT;
   #currentFilter = FilterType.DEFAULT;
 
-  constructor({container, pointsModel, destinationsModel, offersModel, filterModel}) {
+  constructor({ container, pointsModel, destinationsModel, offersModel, filterModel, onNewEventDestroy }) {
     this.#mainContainer = container;
     this.#pointsModel = pointsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
+
+    this.#newEventPresenter = new NewEventPresenter({
+      container: this.#eventsListComponent.element,
+      offersModel: this.#offersModel,
+      destinationsModel: this.#destinationsModel,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewEventDestroy
+    });
 
     this.#pointsModel.addObserver(this.#handlePointsModelEvent);
     this.#filterModel.addObserver(this.#handlePointsModelEvent);
@@ -54,63 +64,22 @@ export default class BoardPresenter {
     return this.#offersModel.offers;
   }
 
-  #handleViewAction = (actionType, updateType, dataToUpdate) => {
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    switch (actionType) {
-      case UserAction.UPDATE_EVENT:
-        this.#pointsModel.updatePoint(updateType, dataToUpdate);
-        break;
-      case UserAction.ADD_EVENT:
-        this.#pointsModel.addPoint(updateType, dataToUpdate);
-        break;
-      case UserAction.DELETE_EVENT:
-        this.#pointsModel.deletePoint(updateType, dataToUpdate);
-        break;
-    }
-  };
+  init() {
+    this.#renderBoard();
+  }
 
-  #handlePointsModelEvent = (updateType, pointToUpdate) => {
-    switch (updateType) {
-      // - обновить часть списка
-      case UpdateType.PATCH:
-        this.#eventPresenters.get(pointToUpdate.id).init(pointToUpdate);
-        break;
-      // - обновить список
-      case UpdateType.MINOR:
-        this.#clearEventsList();
-        this.#renderEventsList();
-        break;
-      // - обновить всю доску - при переключении фильтра)
-      case UpdateType.MAJOR:
-        this.#clearBoard();
-        this.#renderBoard();
-        break;
-    }
-  };
-
-  #handleModeChange = () => {
-    this.#eventPresenters.forEach((presenter) => presenter.resetView());
-  };
+  createEvent() {
+    this.#currentSortType = SortType.DEFAULT;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.DEFAULT);
+    this.#newEventPresenter.init();
+  }
 
   #sortEvents(sortType) {
     this.#currentSortType = sortType;
   }
 
-  #handleSortTypeChange = (sortType) => {
-    if (this.#currentSortType === sortType) {
-      return;
-    }
-
-    this.#sortEvents(sortType);
-    this.#clearEventsList();
-    this.#renderEventsList();
-  };
-
   #renderEvent(point) {
     const eventPresenter = new EventPresenter({
-      // что передавать - модельки или массивы?
-      // если модельки, то можно использовать функции для фильтрации, объявленные там
       container: this.#eventsListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
@@ -130,7 +99,6 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#mainContainer);
   }
 
-  // отрисовывает список точек маршрута
   #renderEventsList() {
     render(this.#eventsListComponent, this.#mainContainer);
 
@@ -156,6 +124,7 @@ export default class BoardPresenter {
 
   #clearBoard(resetSortType = false) {
     this.#clearEventsList();
+    this.#newEventPresenter.destroy();
 
     remove(this.#sortComponent);
 
@@ -173,7 +142,48 @@ export default class BoardPresenter {
     this.#renderEventsList();
   }
 
-  init() {
-    this.#renderBoard();
-  }
+  #handleViewAction = (actionType, updateType, dataToUpdate) => {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this.#pointsModel.updatePoint(updateType, dataToUpdate);
+        break;
+      case UserAction.ADD_EVENT:
+        this.#pointsModel.addPoint(updateType, dataToUpdate);
+        break;
+      case UserAction.DELETE_EVENT:
+        this.#pointsModel.deletePoint(updateType, dataToUpdate);
+        break;
+    }
+  };
+
+  #handlePointsModelEvent = (updateType, pointToUpdate) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#eventPresenters.get(pointToUpdate.id).init(pointToUpdate);
+        break;
+      case UpdateType.MINOR:
+        this.#clearEventsList();
+        this.#renderEventsList();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+    }
+  };
+
+  #handleModeChange = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+    this.#newEventPresenter.destroy();
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortEvents(sortType);
+    this.#clearEventsList();
+    this.#renderEventsList();
+  };
 }

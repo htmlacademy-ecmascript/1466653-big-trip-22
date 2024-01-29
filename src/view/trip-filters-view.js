@@ -14,7 +14,6 @@ function createTripFilterItemTemplate (filter, activeFilter) {
 }
 
 function createTripFiltersTemplate(filters, activeFilter) {
-  // возвращает массив объектов с типом фильтра и количеством отфильтрованных событий
   return `
   <form class="trip-filters" action="#" method="get">
     ${filters.map((item) => createTripFilterItemTemplate(item, activeFilter)).join('')}

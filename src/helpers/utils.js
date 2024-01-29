@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { FilterType } from './../mock/const';
 
-const isEscapeKey = (evt) => evt.key === 'Escape';
+const isEscapeKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 const isDurationEqual = (eventA, eventB) => dayjs(eventA.dateFrom).diff((eventA.dateTo)) === dayjs(eventB.dateFrom).diff((eventB.dateTo));
 

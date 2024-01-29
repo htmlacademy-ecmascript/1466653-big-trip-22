@@ -28,6 +28,63 @@ export default class EventPresenter {
     this.#handleModeChange = onModeChange;
   }
 
+  init(point) {
+    this.#point = point;
+    const selectedDestination = this.#destinationsModel.getById(point.destination);
+    const prevEventComponent = this.#eventComponent;
+    const prevEventEditComponent = this.#eventEditComponent;
+
+    this.#eventComponent = new EventView({
+      point,
+      selectedDestination,
+      selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
+
+      onEditClick: () => {
+        this.#replaceCardToForm();
+        document.addEventListener('keydown', this.#escKeyDownHandler);
+      },
+      onFavoriteClick: this.#handleFavoriteClick,
+    });
+
+    this.#eventEditComponent = new EventEditView({
+      point,
+      destinations: this.#destinationsModel.destinations,
+      offers: this.#offersModel.offers,
+
+      onFormSubmit: this.#handleFormSubmit,
+      onFormClose: this.#handleFormClose,
+      onEventDelete: this.#handleEventDelete,
+    });
+
+    if (prevEventComponent === null || prevEventEditComponent === null) {
+      render(this.#eventComponent, this.#container);
+      return;
+    }
+
+    if (this.#mode === Mode.DEFAULT) {
+      replace(this.#eventComponent, prevEventComponent);
+    }
+
+    if (this.#mode === Mode.EDITING) {
+      replace(this.#eventEditComponent, prevEventEditComponent);
+      this.#mode = Mode.DEFAULT;
+    }
+
+    remove(prevEventComponent);
+    remove(prevEventEditComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
+  }
+
+  destroy() {
+    remove(this.#eventComponent);
+    remove(this.#eventEditComponent);
+  }
+
   #escKeyDownHandler = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
@@ -49,59 +106,11 @@ export default class EventPresenter {
 
   #handleFavoriteClick = () => {
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_EVENT,
       UpdateType.MINOR,
       {...this.#point, isFavorite: !this.#point.isFavorite,},
     );
   };
-
-  init(point) {
-    this.#point = point;
-    const selectedDestination = this.#destinationsModel.getById(point.destination);
-    const prevEventComponent = this.#eventComponent;
-    const prevEventEditComponent = this.#eventEditComponent;
-
-    // карточка события (точки)
-    this.#eventComponent = new EventView({
-      point,
-      selectedDestination,
-      selectedOffers: this.#offersModel.getByTypeAndIds(point.type, point.offers),
-
-      onEditClick: () => {
-        this.#replaceCardToForm();
-        document.addEventListener('keydown', this.#escKeyDownHandler);
-      },
-      onFavoriteClick: this.#handleFavoriteClick,
-    });
-
-    // форма редактирования события (точки)
-    this.#eventEditComponent = new EventEditView({
-      point,
-      selectedDestination,
-      destinations: this.#destinationsModel.destinations,
-      offers: this.#offersModel.offers,
-
-      onFormSubmit: this.#handleFormSubmit,
-      onFormClose: this.#handleFormClose,
-      onEventDelete: this.#handleEventDelete,
-    });
-
-    if (prevEventComponent === null || prevEventEditComponent === null) {
-      render(this.#eventComponent, this.#container);
-      return;
-    }
-
-    if (this.#mode === Mode.DEFAULT) {
-      replace(this.#eventComponent, prevEventComponent);
-    }
-
-    if (this.#mode === Mode.EDITING) {
-      replace(this.#eventEditComponent, prevEventEditComponent);
-    }
-
-    remove(prevEventComponent);
-    remove(prevEventEditComponent);
-  }
 
   #handleFormSubmit = (pointToUpdate) => {
     const isMinorUpdate =
@@ -111,8 +120,9 @@ export default class EventPresenter {
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      this.#point,
+      pointToUpdate,
     );
+    this.#replaceFormToCard();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
@@ -129,15 +139,4 @@ export default class EventPresenter {
     this.#replaceFormToCard();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
-
-  resetView() {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#replaceFormToCard();
-    }
-  }
-
-  destroy() {
-    remove(this.#eventComponent);
-    remove(this.#eventEditComponent);
-  }
 }
