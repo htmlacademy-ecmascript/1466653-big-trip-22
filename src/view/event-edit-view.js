@@ -3,6 +3,7 @@ import { getDateTimeFieldText } from '../helpers/dates.js';
 import { defaultPoint } from '../mock/points.js';
 import { OFFER_TYPES } from '../mock/const.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -105,7 +106,7 @@ function createEventEditTemplate(point, allDestinations, allOffers) {
           <label class="event__label  event__type-output" for="event-destination-${pointId}">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${selectedDestination ? selectedDestination.name : ''}" list="destination-list-${pointId}">
+          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${selectedDestination ? he.encode(selectedDestination.name) : ''}" list="destination-list-${pointId}">
           <datalist id="destination-list-${pointId}">
             ${allDestinations.map((item) => `<option value="${item.name}" data-destination-id="${item.id}"></option>`).join('')}
           </datalist>
@@ -177,7 +178,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteEvent);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#onDestinationInput);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationСhange);
 
     const offersSelector = this.element.querySelector('.event__available-offers');
     const rollupBtn = this.element.querySelector('.event__rollup-btn');
@@ -265,12 +266,12 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  #onDestinationInput = (evt) => {
-    if (evt.target.value) {
-      const destinationId = this.#destinations.find((item) => evt.target.value === item.name).id;
+  #onDestinationСhange = (evt) => {
+    const selectedDestination = this.#destinations.find((item) => evt.target.value === item.name);
 
+    if (selectedDestination) {
       this.updateElement({
-        destination: destinationId,
+        destination: selectedDestination.id,
       });
     }
   };
