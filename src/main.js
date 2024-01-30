@@ -9,6 +9,10 @@ import OffersModel from './models/offers-model.js';
 import PointsModel from './models/points-model.js';
 import FilterModel from './models/filter-model.js';
 import MockService from './mock/service.js';
+import PointApiService from './point-api-service.js';
+
+const AUTHORIZATION = 'Basic ir3rg48j93ngi#th@#h%nivn';
+const END_POINT = 'https://21.objects.pages.academy/big-trip';
 
 const filtersContainer = document.querySelector('.trip-controls__filters');
 const headerMainContainer = document.querySelector('.trip-main');
@@ -17,8 +21,11 @@ const tripEventsContainer = document.querySelector('.trip-events');
 const mockService = new MockService();
 const destinationsModel = new DestinationsModel(mockService);
 const offersModel = new OffersModel(mockService);
-const pointsModel = new PointsModel(mockService);
 const filterModel = new FilterModel();
+// const pointsModel = new PointsModel(mockService);
+const pointsModel = new PointsModel({
+  pointApiService: new PointApiService(END_POINT, AUTHORIZATION)
+});
 
 const boardPresenter = new BoardPresenter({
   container: tripEventsContainer,
