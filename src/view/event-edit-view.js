@@ -266,11 +266,13 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   #onDestinationInput = (evt) => {
-    const destinationId = this.#destinations.find((item) => evt.target.value === item.name).id;
+    if (evt.target.value) {
+      const destinationId = this.#destinations.find((item) => evt.target.value === item.name).id;
 
-    this.updateElement({
-      destination: destinationId,
-    });
+      this.updateElement({
+        destination: destinationId,
+      });
+    }
   };
 
   #onPriceChange = (evt) => {
