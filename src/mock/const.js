@@ -12,6 +12,18 @@ const SortType = {
   PRICE: 'price',
 };
 
+const UserAction = {
+  UPDATE_EVENT: 'UPDATE_EVENT',
+  ADD_EVENT: 'ADD_EVENT',
+  DELETE_EVENT: 'DELETE_EVENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 /* --- DESTINATIONS --- */
 const CITIES = new Map([
   ['Chamonix', 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.'],
@@ -49,4 +61,4 @@ const OFFER_TITLES = [
   'Travel by train'
 ];
 
-export { FilterType, SortType, CITIES, IMG_URL, IMG_DESCRIPTIONS, OFFER_TYPES, OFFER_TITLES };
+export { FilterType, SortType, UserAction, UpdateType, CITIES, IMG_URL, IMG_DESCRIPTIONS, OFFER_TYPES, OFFER_TITLES };
