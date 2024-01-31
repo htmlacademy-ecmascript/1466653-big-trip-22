@@ -23,7 +23,7 @@ function createEventTemplate(point, destination, offers) {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type.toLowerCase()}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${point.type}\u00a0${destination.name ? destination.name : ''}</h3>
+      <h3 class="event__title">${point.type}\u00a0${(destination && destination.name) ? destination.name : ''}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${startDateTimeFullText}">${startTimeText}</time>

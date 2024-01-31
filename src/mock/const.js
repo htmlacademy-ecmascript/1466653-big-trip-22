@@ -51,7 +51,7 @@ const IMG_DESCRIPTIONS = [
 ];
 
 /* --- OFFERS --- */
-const OFFER_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+const OFFER_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const OFFER_TITLES = [
   'Upgrade to a business class',
   'Extra space',

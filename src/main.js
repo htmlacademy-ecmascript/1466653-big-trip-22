@@ -12,7 +12,7 @@ import MockService from './mock/service.js';
 import PointApiService from './point-api-service.js';
 
 const AUTHORIZATION = 'Basic ir3rg48j93ngi#th@#h%nivn';
-const END_POINT = 'https://21.objects.pages.academy/big-trip';
+const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 const filtersContainer = document.querySelector('.trip-controls__filters');
 const headerMainContainer = document.querySelector('.trip-main');

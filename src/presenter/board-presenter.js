@@ -186,6 +186,7 @@ export default class BoardPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#clearBoard();
         this.#renderBoard();
         break;
     }
