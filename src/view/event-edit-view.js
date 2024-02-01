@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDateTimeFieldText } from '../helpers/dates.js';
 import { defaultPoint } from '../mock/points.js';
-import { OFFER_TYPES } from '../mock/const.js';
+import { OFFER_TYPES } from '../helpers/const.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 

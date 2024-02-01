@@ -1,6 +1,6 @@
 import { remove, render, RenderPosition } from './../framework/render.js';
 import EventEditView from './../view/event-edit-view.js';
-import { UserAction, UpdateType } from './../mock/const.js';
+import { UserAction, UpdateType } from '../helpers/const.js';
 import { isEscapeKey } from './../helpers/utils.js';
 
 export default class NewEventPresenter {

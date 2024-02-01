@@ -1,5 +1,5 @@
 import Observable from './../framework/observable';
-import { UpdateType } from './../mock/const';
+import { UpdateType } from '../helpers/const';
 
 export default class DestinationsModel extends Observable {
   #destinations = [];

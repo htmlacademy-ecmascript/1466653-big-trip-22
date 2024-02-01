@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import { FilterType } from './../mock/const';
+import { FilterType } from '../helpers/const';
 
 export default class FilterModel extends Observable {
   #filter = FilterType.DEFAULT;

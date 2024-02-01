@@ -6,7 +6,7 @@ import EventListEmptyView from '../view/event-list-empty.js';
 import LoadingMessageView from '../view/loading-message-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { filter } from '../helpers/utils.js';
-import { FilterType, SortType, UpdateType, UserAction } from '../mock/const';
+import { FilterType, SortType, UpdateType, UserAction } from '../helpers/const.js';
 import { sortEventsByTime, sortEventsByPrice, sortEventsByDate } from '../helpers/utils.js';
 
 export default class BoardPresenter {

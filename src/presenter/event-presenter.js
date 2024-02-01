@@ -2,7 +2,7 @@ import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import { render, replace, remove } from '../framework/render.js';
 import { isEscapeKey, isDatesEqual, isDurationEqual } from '../helpers/utils.js';
-import { UserAction, UpdateType } from './../mock/const.js';
+import { UserAction, UpdateType } from '../helpers/const.js';
 
 const Mode = {
   DEFAULT: 'PREVIEW',
