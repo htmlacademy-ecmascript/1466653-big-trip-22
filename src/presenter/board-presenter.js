@@ -32,6 +32,9 @@ export default class BoardPresenter {
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
 
+    console.log("#eventsListComponent", this.#eventsListComponent);
+    console.log("#loadingComponent", this.#loadingComponent);
+
     this.#newEventPresenter = new NewEventPresenter({
       container: this.#eventsListComponent.element,
       offersModel: this.#offersModel,
@@ -106,9 +109,7 @@ export default class BoardPresenter {
     render(this.#eventsListComponent, this.#mainContainer);
 
     if (this.points.length > 0) {
-      for (let i = 1; i < this.points.length; i++) {
-        this.#renderEvent(this.points[i]);
-      }
+      this.points.forEach((point) => this.#renderEvent(point));
     } else {
       this.#renderNoEventsComponent();
     }
@@ -116,7 +117,6 @@ export default class BoardPresenter {
 
   #renderNoEventsComponent() {
     this.#noEventsComponent = new EventListEmptyView({ filterType: this.#currentFilter });
-
     render(this.#noEventsComponent, this.#mainContainer);
   }
 
@@ -153,7 +153,10 @@ export default class BoardPresenter {
   }
 
   #renderLoading() {
-    render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+    console.log("is Loading");
+    console.log("this.#loadingComponent", this.#loadingComponent);
+    console.log("this.#eventsListComponent", this.#eventsListComponent);
+    render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.BEFOREBEGIN);
   }
 
   #handleViewAction = (actionType, updateType, dataToUpdate) => {

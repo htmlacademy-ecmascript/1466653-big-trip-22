@@ -8,8 +8,10 @@ import DestinationsModel from './models/destinations-model.js';
 import OffersModel from './models/offers-model.js';
 import PointsModel from './models/points-model.js';
 import FilterModel from './models/filter-model.js';
-import MockService from './mock/service.js';
+// import MockService from './mock/service.js';
 import PointApiService from './point-api-service.js';
+import DestinationsApiService from './destinations-api-service.js';
+import OffersApiService from './offers-api-service.js';
 
 const AUTHORIZATION = 'Basic ir3rg48j93ngi#th@#h%nivn';
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
@@ -18,9 +20,13 @@ const filtersContainer = document.querySelector('.trip-controls__filters');
 const headerMainContainer = document.querySelector('.trip-main');
 const tripEventsContainer = document.querySelector('.trip-events');
 
-const mockService = new MockService();
-const destinationsModel = new DestinationsModel(mockService);
-const offersModel = new OffersModel(mockService);
+// const mockService = new MockService();
+const destinationsModel = new DestinationsModel({
+  destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION)
+});
+const offersModel = new OffersModel({
+  offersApiService: new OffersApiService(END_POINT, AUTHORIZATION)
+});
 const filterModel = new FilterModel();
 // const pointsModel = new PointsModel(mockService);
 const pointsModel = new PointsModel({
@@ -53,12 +59,12 @@ function handleNewEventButtonClick() {
   newEventButtonView.element.disabled = true;
 }
 
-// render(newEventButtonView, headerMainContainer);
-
 render(new TripInfoView(), headerMainContainer, RenderPosition.AFTERBEGIN);
 
 filterPresenter.init();
 boardPresenter.init();
+destinationsModel.init();
+offersModel.init();
 pointsModel.init()
   .finally(() => {
     render(newEventButtonView, headerMainContainer);

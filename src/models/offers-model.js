@@ -1,11 +1,13 @@
 import Observable from './../framework/observable';
+import { UpdateType } from './../mock/const';
 
 export default class OffersModel extends Observable {
+  #offersApiService = null;
   #offers = [];
 
-  constructor (service) {
+  constructor ({ offersApiService }) {
     super();
-    this.#offers = service.offers;
+    this.#offersApiService = offersApiService;
   }
 
   get offers() {
@@ -18,49 +20,23 @@ export default class OffersModel extends Observable {
 
   getByTypeAndIds(offerType, offerIds) {
     let filteredOffers = [];
+    const filteredByType = this.getByType(offerType);
 
-    filteredOffers = this.getByType(offerType).offers.filter((offer) => offerIds.includes(offer.id));
+    if (filteredByType) {
+      filteredOffers = filteredByType.offers.filter((offer) => offerIds.includes(offer.id));
+    }
 
     return filteredOffers;
   }
 
-  updatePoint(updateAction, offerToUpdate) {
-    const index = this.#offers.findIndex((offer) => offer.id === offerToUpdate.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t update unexisting offer');
+  async init() {
+    try {
+      this.#offers = await this.#offersApiService.offers;
+    } catch(err) {
+      this.#offers = [];
     }
 
-    this.#offers = [
-      ...this.#offers.slice(0, index),
-      offerToUpdate,
-      ...this.#offers.slice(index + 1),
-    ];
-
-    this._notify(updateAction, offerToUpdate);
-  }
-
-  addPoint(updateAction, offerToUpdate) {
-    this.points = [
-      offerToUpdate,
-      ...this.points,
-    ];
-
-    this._notify(updateAction, offerToUpdate);
-  }
-
-  deletePoint(updateAction, update) {
-    const index = this.#offers.findIndex((point) => offers.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting offers');
-    }
-
-    this.#offers = [
-      ...this.#offers.slice(0, index),
-      ...this.#offers.slice(index + 1),
-    ];
-
-    this._notify(updateAction);
+    this._notify(UpdateType.INIT);
+    console.log("offersModel - init - finished");
   }
 }

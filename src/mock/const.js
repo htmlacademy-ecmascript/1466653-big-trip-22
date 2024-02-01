@@ -25,6 +25,11 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
 /* --- DESTINATIONS --- */
 const CITIES = new Map([
   ['Chamonix', 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.'],
@@ -62,4 +67,4 @@ const OFFER_TITLES = [
   'Travel by train'
 ];
 
-export { FilterType, SortType, UserAction, UpdateType, CITIES, IMG_URL, IMG_DESCRIPTIONS, OFFER_TYPES, OFFER_TITLES };
+export { FilterType, SortType, UserAction, UpdateType, Method, CITIES, IMG_URL, IMG_DESCRIPTIONS, OFFER_TYPES, OFFER_TITLES };
