@@ -156,16 +156,31 @@ export default class BoardPresenter {
     render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.BEFOREBEGIN);
   }
 
-  #handleViewAction = (actionType, updateType, dataToUpdate) => {
+  #handleViewAction = async (actionType, updateType, dataToUpdate) => {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#pointsModel.updatePoint(updateType, dataToUpdate);
+        this.#eventPresenters.get(dataToUpdate.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, dataToUpdate);
+        } catch(err) {
+          throw new Error('Can\'t update the event');
+        }
         break;
       case UserAction.ADD_EVENT:
-        this.#pointsModel.addPoint(updateType, dataToUpdate);
+        this.#newEventPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, dataToUpdate);
+        } catch(err) {
+          throw new Error('Can\'t add an event');
+        }
         break;
       case UserAction.DELETE_EVENT:
-        this.#pointsModel.deletePoint(updateType, dataToUpdate);
+        this.#eventPresenters.get(dataToUpdate.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, dataToUpdate);
+        } catch(err) {
+          throw new Error('Can\'t delete the event');
+        }
         break;
     }
   };

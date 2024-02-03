@@ -67,7 +67,8 @@ export default class EventPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#eventEditComponent, prevEventEditComponent);
+      replace(this.#eventComponent, prevEventEditComponent);
+      // replace(this.#eventEditComponent, prevEventEditComponent);
       this.#mode = Mode.DEFAULT;
     }
 
@@ -81,18 +82,28 @@ export default class EventPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode !== Mode.EDIT) {
+      this.#eventEditComponent.updateElement({
+        isSaving: true,
+        isDisabled: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode !== Mode.EDIT) {
+      this.#eventEditComponent.updateElement({
+        isDeleting: true,
+        isDisabled: true,
+      });
+    }
+  }
+
   destroy() {
     remove(this.#eventComponent);
     remove(this.#eventEditComponent);
   }
-
-  #escKeyDownHandler = (evt) => {
-    if (isEscapeKey(evt)) {
-      evt.preventDefault();
-      this.#replaceFormToCard();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
-    }
-  };
 
   #replaceCardToForm() {
     replace(this.#eventEditComponent, this.#eventComponent);
@@ -105,6 +116,15 @@ export default class EventPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
+  #escKeyDownHandler = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      this.#replaceFormToCard();
+
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    }
+  };
+
   #handleFavoriteClick = () => {
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
@@ -115,15 +135,15 @@ export default class EventPresenter {
 
   #handleFormSubmit = (pointToUpdate) => {
     const isMinorUpdate =
-      !isDatesEqual(this.#point.dateFrom, pointToUpdate.dateFrom) ||
-      this.#point.basePrice !== pointToUpdate.basePrice ||
+      !isDatesEqual(this.#point.dateFrom, pointToUpdate.dateFrom) &&
+      this.#point.basePrice !== pointToUpdate.basePrice &&
       !isDurationEqual(this.#point, pointToUpdate);
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       pointToUpdate,
     );
-    this.#replaceFormToCard();
+    // this.#replaceFormToCard();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
