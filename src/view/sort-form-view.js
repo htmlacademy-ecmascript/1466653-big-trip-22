@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import { SortType } from '../mock/const';
+import { SortType } from './../helpers/const';
 
 function createSortFormTemplate() {
   return `

@@ -1,11 +1,13 @@
 import Observable from './../framework/observable';
+import { UpdateType } from './../helpers/const';
 
 export default class DestinationsModel extends Observable {
   #destinations = [];
+  #destinationsApiService = null;
 
-  constructor (service) {
+  constructor ({ destinationsApiService }) {
     super();
-    this.#destinations = service.destinations;
+    this.#destinationsApiService = destinationsApiService;
   }
 
   get destinations() {
@@ -16,43 +18,13 @@ export default class DestinationsModel extends Observable {
     return this.#destinations.find((destination) => destination.id === id);
   }
 
-  updateDestination(updateAction, destinationToUpdate) {
-    const index = this.#destinations.findIndex((destination) => destination.id === destinationToUpdate.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t update unexisting destination');
+  async init() {
+    try {
+      this.#destinations = await this.#destinationsApiService.destinations;
+    } catch(err) {
+      this.#destinations = [];
     }
 
-    this.#destinations = [
-      ...this.#destinations.slice(0, index),
-      destinationToUpdate,
-      ...this.#destinations.slice(index + 1),
-    ];
-
-    this._notify(updateAction, destinationToUpdate);
-  }
-
-  addDestination(updateAction, destinationToUpdate) {
-    this.#destinations = [
-      destinationToUpdate,
-      ...this.#destinations,
-    ];
-
-    this._notify(updateAction, destinationToUpdate);
-  }
-
-  deleteDestination(updateAction, update) {
-    const index = this.#destinations.findIndex((destination) => destination.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting point');
-    }
-
-    this.#destinations = [
-      ...this.#destinations.slice(0, index),
-      ...this.#destinations.slice(index + 1),
-    ];
-
-    this._notify(updateAction);
+    this._notify(UpdateType.INIT);
   }
 }

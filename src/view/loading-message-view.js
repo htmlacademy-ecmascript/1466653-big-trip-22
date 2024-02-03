@@ -1,9 +1,8 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractView from './../framework/view/abstract-view';
 
 function createLoadingMessageTemplate() {
-  return `
-  <p class="trip-events__msg">Loading...</p>
-`;
+  console.log("createLoadingMessageTemplate");
+  return '<p class="trip-events__msg">Loading...</p>';
 }
 
 export default class LoadingMessageView extends AbstractView {

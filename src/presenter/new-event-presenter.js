@@ -1,6 +1,6 @@
 import { remove, render, RenderPosition } from './../framework/render.js';
 import EventEditView from './../view/event-edit-view.js';
-import { UserAction, UpdateType } from './../mock/const.js';
+import { UserAction, UpdateType } from './../helpers/const.js';
 import { isEscapeKey } from './../helpers/utils.js';
 
 export default class NewEventPresenter {
@@ -27,6 +27,7 @@ export default class NewEventPresenter {
     this.#eventEditComponent = new EventEditView({
       destinations: this.#destinationsModel.destinations,
       offers: this.#offersModel.offers,
+      offerTypes: this.#offersModel.types,
       onFormSubmit: this.#handleFormSubmit,
       onFormClose: this.#handleDeleteClick,
       onEventDelete: this.#handleDeleteClick,
@@ -52,7 +53,7 @@ export default class NewEventPresenter {
     this.#handleDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,
-      {id: crypto.randomUUID(), ...point},
+      point,
     );
     this.destroy();
   };

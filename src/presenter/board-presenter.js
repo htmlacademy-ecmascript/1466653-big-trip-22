@@ -3,9 +3,10 @@ import EventsListView from '../view/events-list-view.js';
 import EventPresenter from './event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
 import EventListEmptyView from '../view/event-list-empty.js';
-import { render, remove } from '../framework/render.js';
+import LoadingMessageView from '../view/loading-message-view.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 import { filter } from '../helpers/utils.js';
-import { FilterType, SortType, UpdateType, UserAction } from '../mock/const';
+import { FilterType, SortType, UpdateType, UserAction } from './../helpers/const.js';
 import { sortEventsByTime, sortEventsByPrice, sortEventsByDate } from '../helpers/utils.js';
 
 export default class BoardPresenter {
@@ -19,8 +20,10 @@ export default class BoardPresenter {
   #newEventPresenter = null;
   #sortComponent = null;
   #noEventsComponent = null;
+  #loadingComponent = new LoadingMessageView();
   #currentSortType = SortType.DEFAULT;
   #currentFilter = FilterType.DEFAULT;
+  #isLoading = true;
 
   constructor({ container, pointsModel, destinationsModel, offersModel, filterModel, onNewEventDestroy }) {
     this.#mainContainer = container;
@@ -103,9 +106,7 @@ export default class BoardPresenter {
     render(this.#eventsListComponent, this.#mainContainer);
 
     if (this.points.length > 0) {
-      for (let i = 1; i < this.points.length; i++) {
-        this.#renderEvent(this.points[i]);
-      }
+      this.points.forEach((point) => this.#renderEvent(point));
     } else {
       this.#renderNoEventsComponent();
     }
@@ -113,7 +114,6 @@ export default class BoardPresenter {
 
   #renderNoEventsComponent() {
     this.#noEventsComponent = new EventListEmptyView({ filterType: this.#currentFilter });
-
     render(this.#noEventsComponent, this.#mainContainer);
   }
 
@@ -127,6 +127,7 @@ export default class BoardPresenter {
     this.#newEventPresenter.destroy();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
@@ -139,7 +140,20 @@ export default class BoardPresenter {
 
   #renderBoard() {
     this.#renderSortForm();
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderEventsList();
+  }
+
+  #renderLoading() {
+    console.log("is Loading");
+    console.log("this.#loadingComponent", this.#loadingComponent);
+    console.log("this.#eventsListComponent", this.#eventsListComponent);
+    render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.BEFOREBEGIN);
   }
 
   #handleViewAction = (actionType, updateType, dataToUpdate) => {
@@ -166,6 +180,12 @@ export default class BoardPresenter {
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#clearBoard();
         this.#renderBoard();
         break;

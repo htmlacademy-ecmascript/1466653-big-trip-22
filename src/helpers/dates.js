@@ -1,8 +1,4 @@
 import dayjs from 'dayjs';
-import { getRandomInteger } from './utils';
-
-const getRandomStartDate = () => new Date(2024, 0, getRandomInteger(20, 31), getRandomInteger(7, 23), getRandomInteger(0, 59));
-const getRandomEndDate = () => new Date(2024, 1, getRandomInteger(0, 29), getRandomInteger(7, 23), getRandomInteger(0, 59));
 
 function getDateTimeFullText(date) {
   return date ? dayjs(date).format('YYYY-MM-DDTHH:mm') : '';
@@ -45,8 +41,6 @@ function getDuration(dateStart, dateEnd) {
 }
 
 export {
-  getRandomStartDate,
-  getRandomEndDate,
   getDateTimeFullText,
   getDateTimeShortText,
   getDateTimeFieldText,
