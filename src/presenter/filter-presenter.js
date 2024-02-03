@@ -21,7 +21,6 @@ export default class FilterPresenter {
   get filters() {
     const points = this.#pointsModel.points;
 
-    // возвращает массив объектов с типом фильтра и количеством отфильтрованных событий
     return Object.values(FilterType).map((type) => ({
       type,
       count: filter[type](points).length
