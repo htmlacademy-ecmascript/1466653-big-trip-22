@@ -8,6 +8,12 @@ import { render, remove, RenderPosition } from '../framework/render.js';
 import { filter } from '../helpers/utils.js';
 import { FilterType, SortType, UpdateType, UserAction } from './../helpers/const.js';
 import { sortEventsByTime, sortEventsByPrice, sortEventsByDate } from '../helpers/utils.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class BoardPresenter {
   #mainContainer = null;
@@ -24,6 +30,10 @@ export default class BoardPresenter {
   #currentSortType = SortType.DEFAULT;
   #currentFilter = FilterType.DEFAULT;
   #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({ container, pointsModel, destinationsModel, offersModel, filterModel, onNewEventDestroy }) {
     this.#mainContainer = container;
@@ -151,19 +161,20 @@ export default class BoardPresenter {
 
   #renderLoading() {
     console.log("is Loading");
-    console.log("this.#loadingComponent", this.#loadingComponent);
-    console.log("this.#eventsListComponent", this.#eventsListComponent);
+    console.log("this.#loadingComponent", this.#loadingComponent, "this.#eventsListComponent", this.#eventsListComponent);
     render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.BEFOREBEGIN);
   }
 
   #handleViewAction = async (actionType, updateType, dataToUpdate) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
         this.#eventPresenters.get(dataToUpdate.id).setSaving();
         try {
           await this.#pointsModel.updatePoint(updateType, dataToUpdate);
         } catch(err) {
-          throw new Error('Can\'t update the event');
+          this.#eventPresenters.get(dataToUpdate.id).setAborting();
         }
         break;
       case UserAction.ADD_EVENT:
@@ -171,7 +182,7 @@ export default class BoardPresenter {
         try {
           await this.#pointsModel.addPoint(updateType, dataToUpdate);
         } catch(err) {
-          throw new Error('Can\'t add an event');
+          this.#newEventPresenter.setAborting();
         }
         break;
       case UserAction.DELETE_EVENT:
@@ -179,10 +190,12 @@ export default class BoardPresenter {
         try {
           await this.#pointsModel.deletePoint(updateType, dataToUpdate);
         } catch(err) {
-          throw new Error('Can\'t delete the event');
+          this.#eventPresenters.get(dataToUpdate.id).setAborting();
         }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handlePointsModelEvent = (updateType, pointToUpdate) => {
