@@ -6,7 +6,6 @@ import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const defaultPoint = {
-  id: null,
   basePrice: 0,
   dateFrom: null,
   dateTo: null,
@@ -19,7 +18,7 @@ const defaultPoint = {
 function createOfferTypeSelectorsTemplate(offerTypes) {
   return offerTypes.map((offerType) => `
   <div class="event__type-item">
-    <input id="event-type-${offerType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType}">
+    <input id="event-type-${offerType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType.toLowerCase()}">
     <label class="event__type-label  event__type-label--${offerType.toLowerCase()}" for="event-type-${offerType.toLowerCase()}-1">${offerType}</label>
   </div>
   `).join('');
