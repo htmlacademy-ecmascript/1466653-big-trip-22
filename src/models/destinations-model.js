@@ -1,5 +1,5 @@
 import Observable from './../framework/observable';
-import { UpdateType } from '../helpers/const';
+import { UpdateType } from './../helpers/const';
 
 export default class DestinationsModel extends Observable {
   #destinations = [];
@@ -20,12 +20,11 @@ export default class DestinationsModel extends Observable {
 
   async init() {
     try {
-      this.#destinations = await this.#destinationsApiService.destination;ß
+      this.#destinations = await this.#destinationsApiService.destinations;
     } catch(err) {
       this.#destinations = [];
     }
 
     this._notify(UpdateType.INIT);
-    console.log("destinationsModel - init - finished");
   }
 }

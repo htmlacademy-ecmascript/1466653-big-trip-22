@@ -1,5 +1,5 @@
 import Observable from './../framework/observable';
-import { UpdateType } from '../helpers/const';
+import { UpdateType } from './../helpers/const';
 
 export default class OffersModel extends Observable {
   #offersApiService = null;
@@ -12,6 +12,10 @@ export default class OffersModel extends Observable {
 
   get offers() {
     return this.#offers;
+  }
+
+  get types() {
+    return this.#offers.map((offer) => offer.type);
   }
 
   getByType(type) {

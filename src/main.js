@@ -62,9 +62,9 @@ function handleNewEventButtonClick() {
 render(new TripInfoView(), headerMainContainer, RenderPosition.AFTERBEGIN);
 
 filterPresenter.init();
-boardPresenter.init();
 destinationsModel.init();
 offersModel.init();
+boardPresenter.init();
 pointsModel.init()
   .finally(() => {
     render(newEventButtonView, headerMainContainer);

@@ -1,14 +1,23 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getDateTimeFieldText } from '../helpers/dates.js';
-import { defaultPoint } from '../mock/points.js';
-import { OFFER_TYPES } from '../helpers/const.js';
+import { getDateTimeFieldText } from './../helpers/dates.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createOfferTypeSelectorsTemplate() {
-  return OFFER_TYPES.map((offerType) => `
+const defaultPoint = {
+  id: null,
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  type: 'Flight',
+};
+
+function createOfferTypeSelectorsTemplate(offerTypes) {
+  return offerTypes.map((offerType) => `
   <div class="event__type-item">
     <input id="event-type-${offerType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType}">
     <label class="event__type-label  event__type-label--${offerType.toLowerCase()}" for="event-type-${offerType.toLowerCase()}-1">${offerType}</label>
@@ -75,7 +84,7 @@ function createDestinationTemplate(destination) {
     </section>`;
 }
 
-function createEventEditTemplate(point, allDestinations, allOffers) {
+function createEventEditTemplate(point, allDestinations, allOffers, offerTypes) {
   const startDateTimeText = getDateTimeFieldText(point.dateFrom);
   const endDateTimeText = getDateTimeFieldText(point.dateTo);
   const pointId = point.id || 0;
@@ -97,7 +106,7 @@ function createEventEditTemplate(point, allDestinations, allOffers) {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              ${createOfferTypeSelectorsTemplate()}
+              ${createOfferTypeSelectorsTemplate(offerTypes)}
             </fieldset>
           </div>
         </div>
@@ -150,18 +159,20 @@ export default class EventEditView extends AbstractStatefulView {
   #point = null;
   #offers = [];
   #destinations = [];
+  #offerTypes = [];
   #datepickerStart = null;
   #datepickerEnd = null;
   #handleSaveClick = null;
   #handleResetClick = null;
   #handleDeleteClick = null;
 
-  constructor({ point = defaultPoint, destinations, offers, onFormSubmit, onFormClose, onEventDelete }) {
+  constructor({ point = defaultPoint, destinations, offers, offerTypes, onFormSubmit, onFormClose, onEventDelete }) {
     super();
     this.#point = point;
     this._state = EventEditView.parsePointToState(point);
     this.#destinations = destinations;
     this.#offers = offers;
+    this.#offerTypes = offerTypes;
     this.#handleSaveClick = onFormSubmit;
     this.#handleResetClick = onFormClose;
     this.#handleDeleteClick = onEventDelete;
@@ -170,7 +181,7 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEventEditTemplate(this._state, this.#destinations, this.#offers);
+    return createEventEditTemplate(this._state, this.#destinations, this.#offers, this.#offerTypes);
   }
 
   _restoreHandlers() {
