@@ -18,9 +18,9 @@ const sortEventsByDate = (previousEvent, nextEvent) => dayjs(previousEvent.dateF
 /* ---- FILTER ---- */
 const filter = {
   [FilterType.DEFAULT]: (points) => points,
-  [FilterType.FUTURE]: (points) => points.filter((point) => dayjs().isBefore(point.dateFrom, 'D')),
-  [FilterType.PRESENT]: (points) => points.filter((point) => dayjs().isAfter(point.dateFrom, 'D') && dayjs().isBefore(point.dateTo, 'D')),
-  [FilterType.PAST]: (points) => points.filter((point) => dayjs().isAfter(point.dateFrom, 'D') && dayjs().isAfter(point.dateTo, 'D')),
+  [FilterType.FUTURE]: (points) => points.filter((point) => dayjs().isBefore(point.dateFrom, 'minutes')),
+  [FilterType.PRESENT]: (points) => points.filter((point) => dayjs().isAfter(point.dateFrom, 'minutes') && dayjs().isBefore(point.dateTo, 'minutes')),
+  [FilterType.PAST]: (points) => points.filter((point) => dayjs().isAfter(point.dateTo, 'minutes')),
 };
 
 export {
