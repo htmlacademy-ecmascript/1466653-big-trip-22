@@ -41,6 +41,5 @@ export default class OffersModel extends Observable {
     }
 
     this._notify(UpdateType.INIT);
-    console.log("offersModel - init - finished");
   }
 }

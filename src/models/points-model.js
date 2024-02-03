@@ -23,7 +23,6 @@ export default class PointsModel extends Observable {
     }
 
     this._notify(UpdateType.INIT);
-    console.log("PointsModel - init - finished");
   }
 
   async updatePoint(updateAction, pointToUpdate) {

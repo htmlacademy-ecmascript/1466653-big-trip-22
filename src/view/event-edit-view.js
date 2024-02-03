@@ -12,13 +12,14 @@ const defaultPoint = {
   destination: '',
   isFavorite: false,
   offers: [],
-  type: 'Flight',
+  type: 'flight',
 };
 
-function createOfferTypeSelectorsTemplate(offerTypes) {
+function createOfferTypeSelectorsTemplate(offerTypes, isDisabled) {
   return offerTypes.map((offerType) => `
   <div class="event__type-item">
-    <input id="event-type-${offerType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offerType.toLowerCase()}">
+    <input id="event-type-${offerType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio"
+    name="event-type" value="${offerType.toLowerCase()}" ${ isDisabled ? 'disabled' : ''}>
     <label class="event__type-label  event__type-label--${offerType.toLowerCase()}" for="event-type-${offerType.toLowerCase()}-1">${offerType}</label>
   </div>
   `).join('');
@@ -89,6 +90,7 @@ function createEventEditTemplate(point, allDestinations, allOffers, offerTypes) 
   const pointId = point.id || 0;
   const selectedDestination = allDestinations.find((item) => item.id === point.destination);
   const availableTypeOffers = allOffers.find((item) => item.type === point.type)?.offers || [];
+  const deleteBtnTitle = point.id ? 'Delete' : 'Cancel';
 
   return `
   <li class="trip-events__item">
@@ -105,7 +107,7 @@ function createEventEditTemplate(point, allDestinations, allOffers, offerTypes) 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              ${createOfferTypeSelectorsTemplate(offerTypes)}
+              ${createOfferTypeSelectorsTemplate(offerTypes, point.isDisabled)}
             </fieldset>
           </div>
         </div>
@@ -114,7 +116,7 @@ function createEventEditTemplate(point, allDestinations, allOffers, offerTypes) 
           <label class="event__label  event__type-output" for="event-destination-${pointId}">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${selectedDestination ? he.encode(selectedDestination.name) : ''}" list="destination-list-${pointId}">
+          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${selectedDestination ? he.encode(selectedDestination.name) : ''}" list="destination-list-${pointId}" ${point.isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-${pointId}">
             ${allDestinations.map((item) => `<option value="${item.name}" data-destination-id="${item.id}"></option>`).join('')}
           </datalist>
@@ -136,10 +138,14 @@ function createEventEditTemplate(point, allDestinations, allOffers, offerTypes) 
           <input class="event__input  event__input--price" id="event-price-${pointId}" type="text" name="event-price" value="${point.basePrice ?? ''}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${point.id ? 'Delete' : 'Cancel'}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${point.isDisabled ? 'disabled' : ''}>
+          ${point.isSaving ? 'Saving...' : 'Save'}
+        </button>
+        <button class="event__reset-btn" type="reset" ${point.isDisabled ? 'disabled' : ''}>
+          ${ point.isDeleting ? 'Deleting...' : deleteBtnTitle }
+        </button>
         ${point.id ? `
-          <button class="event__rollup-btn" type="button">
+          <button class="event__rollup-btn" type="button" ${point.isDisabled ? 'disabled' : ''}>
             <span class="visually-hidden">Open event</span>
           </button>
         ` : ''}
@@ -207,11 +213,19 @@ export default class EventEditView extends AbstractStatefulView {
   static parsePointToState(point) {
     return {
       ...point,
+      isDisabled: false,
+      isDeleting: false,
+      isSaving: false,
     };
   }
 
   static parseStateToPoint(state) {
     const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isDeleting;
+    delete point.isSaving;
+
     return point;
   }
 
