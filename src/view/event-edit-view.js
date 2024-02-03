@@ -302,7 +302,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #onPriceChange = (evt) => {
     this.updateElement({
-      basePrice: evt.target.value,
+      basePrice:  Number(evt.target.value),
     });
   };
 
