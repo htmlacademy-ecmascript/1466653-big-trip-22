@@ -1,17 +1,17 @@
 import AbstractView from '../framework/view/abstract-view';
 import { getDateMonthText } from '../helpers/dates';
 
-function createTripInfoTemplate(points = [], destinationNames = [], offersPrice = 0) {
+function createTripInfoTemplate(points = [], destinationNames = [], offersSum = 0) {
   const destinationsText = () => {
     if (destinationNames.length > 3) {
-      return `${destinationNames[0]}&nbsp;&mdash;&nbsp;...&nbsp;&mdash;&nbsp;${destinationNames[destinationNames.length - 1]}`;
+      return `${destinationNames[0]}&nbsp;&mdash;&nbsp;...&nbsp;&mdash;&nbsp;${destinationNames[destinationNames.length - 1]} `;
     }
 
     if (destinationNames.length === 0) {
       return '';
     }
 
-    return `${destinationNames.join('\u00a0-\u00a0')}`;
+    return `${destinationNames.join('\u00a0-\u00a0')} `;
   };
 
   const datesText = () => {
@@ -19,33 +19,35 @@ function createTripInfoTemplate(points = [], destinationNames = [], offersPrice 
       case points.length === 0:
         return '';
       case points.length === 1:
-        return `${getDateMonthText(points[0].dateFrom)}`;
+        return ` ${getDateMonthText(points[0].dateFrom)} `;
       default:
         return `${getDateMonthText(points[0].dateFrom)}&nbsp;&mdash;&nbsp;${getDateMonthText(points[points.length - 1].dateTo)}`;
     }
   };
 
   const totalSum = () => {
-    if(points.length === 0) {
-      return 0;
+    if (points.length === 0) {
+      return '';
     }
 
-    const sum = points.reduce((total, point) => (total + Number(point.basePrice)), 0);
+    const pointsSum = points.reduce((sum, point) => (sum + Number(point.basePrice)), 0);
+    const total = pointsSum + offersSum;
 
-    return sum + offersPrice;
+    if (total > 0) {
+      return `Total: &euro;&nbsp;<span class="trip-info__cost-value">${total}</span>`;
+    }
+
+    return '';
   };
 
   return `
   <section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${destinationsText()}</h1>
-
       <p class="trip-info__dates">${datesText()}</p>
     </div>
 
-    <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalSum()}</span>
-    </p>
+    <p class="trip-info__cost">${totalSum()}</p>
   </section>
 `;
 }
@@ -53,16 +55,16 @@ function createTripInfoTemplate(points = [], destinationNames = [], offersPrice 
 export default class TripInfoView extends AbstractView {
   #points = [];
   #destinationNames = [];
-  #offersPrice = null;
+  #offersPriceSum = null;
 
-  constructor({ points, destinationNames, offersPrice }) {
+  constructor({ points, destinationNames, offersPriceSum }) {
     super();
     this.#points = points;
     this.#destinationNames = destinationNames;
-    this.#offersPrice = offersPrice;
+    this.#offersPriceSum = offersPriceSum;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#points, this.#destinationNames, this.#offersPrice);
+    return createTripInfoTemplate(this.#points, this.#destinationNames, this.#offersPriceSum);
   }
 }

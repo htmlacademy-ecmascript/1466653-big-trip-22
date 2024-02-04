@@ -6,7 +6,7 @@ import { UserAction, UpdateType } from './../helpers/const.js';
 
 const Mode = {
   DEFAULT: 'PREVIEW',
-  EDITING: 'EDIT',
+  EDIT: 'EDIT',
 };
 
 export default class EventPresenter {
@@ -66,7 +66,7 @@ export default class EventPresenter {
       replace(this.#eventComponent, prevEventComponent);
     }
 
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === Mode.EDIT) {
       replace(this.#eventComponent, prevEventEditComponent);
       this.#mode = Mode.DEFAULT;
     }
@@ -77,12 +77,13 @@ export default class EventPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   }
 
   setSaving() {
-    if (this.#mode !== Mode.EDIT) {
+    if (this.#mode === Mode.EDIT) {
       this.#eventEditComponent.updateElement({
         isSaving: true,
         isDisabled: true,
@@ -91,7 +92,7 @@ export default class EventPresenter {
   }
 
   setDeleting() {
-    if (this.#mode !== Mode.EDIT) {
+    if (this.#mode === Mode.EDIT) {
       this.#eventEditComponent.updateElement({
         isDeleting: true,
         isDisabled: true,
@@ -124,7 +125,7 @@ export default class EventPresenter {
   #replaceCardToForm() {
     replace(this.#eventEditComponent, this.#eventComponent);
     this.#handleModeChange();
-    this.#mode = Mode.EDITING;
+    this.#mode = Mode.EDIT;
   }
 
   #replaceFormToCard() {
@@ -135,6 +136,7 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#point);
       this.#replaceFormToCard();
 
       document.removeEventListener('keydown', this.#escKeyDownHandler);
@@ -144,15 +146,15 @@ export default class EventPresenter {
   #handleFavoriteClick = () => {
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
-      UpdateType.MINOR,
-      {...this.#point, isFavorite: !this.#point.isFavorite,},
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
     );
   };
 
   #handleFormSubmit = (pointToUpdate) => {
     const isMinorUpdate =
-      !isDatesEqual(this.#point.dateFrom, pointToUpdate.dateFrom) &&
-      this.#point.basePrice !== pointToUpdate.basePrice &&
+      !isDatesEqual(this.#point.dateFrom, pointToUpdate.dateFrom) ||
+      this.#point.basePrice !== pointToUpdate.basePrice ||
       !isDurationEqual(this.#point, pointToUpdate);
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
@@ -173,6 +175,7 @@ export default class EventPresenter {
   };
 
   #handleFormClose = () => {
+    this.#eventEditComponent.reset(this.#point);
     this.#replaceFormToCard();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };

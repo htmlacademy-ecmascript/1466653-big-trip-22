@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
+const DIGITS_NUMBER = 2;
+
 function getDateTimeFullText(date) {
   return date ? dayjs(date).format('YYYY-MM-DDTHH:mm') : '';
 }
@@ -12,8 +14,12 @@ function getDateTimeFieldText(date) {
   return date ? dayjs(date).format('DD/MM/YY HH:mm') : '';
 }
 
-function getDateMonthText(date) {
+function getMonthDateText(date) {
   return date ? dayjs(date).format('MMM DD') : '';
+}
+
+function getDateMonthText(date) {
+  return date ? dayjs(date).format('DD MMM') : '';
 }
 
 function getTimeText(date) {
@@ -25,7 +31,7 @@ function getDuration(dateStart, dateEnd) {
   let hours = 0;
   let days = 0;
 
-  minutes = ((new Date(dateEnd).getTime()) - (new Date(dateStart).getTime())) / (1000 * 60);
+  minutes = Math.ceil(((new Date(dateEnd).getTime()) - (new Date(dateStart).getTime())) / (1000 * 60));
 
   if (minutes >= 60) {
     hours = Math.floor(minutes / 60);
@@ -37,13 +43,18 @@ function getDuration(dateStart, dateEnd) {
     hours = Math.floor(hours % 24);
   }
 
-  return { minutes, hours, days };
+  return {
+    minutes: minutes.toString().padStart(DIGITS_NUMBER, '0'),
+    hours: hours.toString().padStart(DIGITS_NUMBER, '0'),
+    days
+  };
 }
 
 export {
   getDateTimeFullText,
   getDateTimeShortText,
   getDateTimeFieldText,
+  getMonthDateText,
   getDateMonthText,
   getTimeText,
   getDuration,
