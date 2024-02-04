@@ -8,7 +8,7 @@ const NoEventsText = {
   [FilterType.PAST]: 'There are no points in past',
 };
 
-function createEventListEmptyTemplate({ filterType }) {
+function createEventListEmptyTemplate(filterType) {
   return `
   <p class="trip-events__msg">${NoEventsText[filterType]}</p>
   `;

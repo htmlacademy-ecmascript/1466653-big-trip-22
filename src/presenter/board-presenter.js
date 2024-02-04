@@ -4,16 +4,11 @@ import EventPresenter from './event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
 import EventListEmptyView from '../view/event-list-empty.js';
 import LoadingMessageView from '../view/loading-message-view.js';
-import { render, remove, RenderPosition } from '../framework/render.js';
+import { render, remove } from '../framework/render.js';
 import { filter } from '../helpers/utils.js';
-import { FilterType, SortType, UpdateType, UserAction } from './../helpers/const.js';
+import { FilterType, SortType, UpdateType, UserAction, TimeLimit } from './../helpers/const.js';
 import { sortEventsByTime, sortEventsByPrice, sortEventsByDate } from '../helpers/utils.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-
-const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
-};
 
 export default class BoardPresenter {
   #mainContainer = null;
@@ -46,6 +41,7 @@ export default class BoardPresenter {
       container: this.#eventsListComponent.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
+
       onDataChange: this.#handleViewAction,
       onDestroy: onNewEventDestroy
     });
@@ -127,6 +123,10 @@ export default class BoardPresenter {
     render(this.#noEventsComponent, this.#mainContainer);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#mainContainer);
+  }
+
   #clearEventsList() {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
@@ -157,12 +157,6 @@ export default class BoardPresenter {
     }
 
     this.#renderEventsList();
-  }
-
-  #renderLoading() {
-    console.log("is Loading");
-    console.log("this.#loadingComponent", this.#loadingComponent, "this.#eventsListComponent", this.#eventsListComponent);
-    render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.BEFOREBEGIN);
   }
 
   #handleViewAction = async (actionType, updateType, dataToUpdate) => {

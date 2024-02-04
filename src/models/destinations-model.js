@@ -18,6 +18,14 @@ export default class DestinationsModel extends Observable {
     return this.#destinations.find((destination) => destination.id === id);
   }
 
+  getDestinationNames(ids) {
+    const names = [];
+
+    ids.forEach((id) => names.push(this.getById(id).name));
+
+    return names;
+  }
+
   async init() {
     try {
       this.#destinations = await this.#destinationsApiService.destinations;

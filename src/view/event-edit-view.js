@@ -240,7 +240,8 @@ export default class EventEditView extends AbstractStatefulView {
 
   #setCalendarStart () {
     this.#datepickerStart = flatpickr(this.element.querySelectorAll('.event__input--time')[0], {
-      dateFormat: 'd/m/y',
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
       minDate: new Date(),
       // eslint-disable-next-line camelcase
       time_24hr: true,
@@ -250,7 +251,8 @@ export default class EventEditView extends AbstractStatefulView {
 
   #setCalendarEnd () {
     this.#datepickerEnd = flatpickr(this.element.querySelectorAll('.event__input--time')[1], {
-      dateFormat: 'd/m/y',
+      dateFormat: 'd/m/y  H:i',
+      enableTime: true,
       minDate: this.#datepickerStart.selectedDates[0] || new Date(),
       // eslint-disable-next-line camelcase
       time_24hr: true,
@@ -302,7 +304,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #onPriceChange = (evt) => {
     this.updateElement({
-      basePrice: evt.target.value,
+      basePrice:  parseInt(evt.target.value, 10) || 0,
     });
   };
 

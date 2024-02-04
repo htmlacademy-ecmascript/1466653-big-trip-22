@@ -68,7 +68,6 @@ export default class EventPresenter {
 
     if (this.#mode === Mode.EDITING) {
       replace(this.#eventComponent, prevEventEditComponent);
-      // replace(this.#eventEditComponent, prevEventEditComponent);
       this.#mode = Mode.DEFAULT;
     }
 
@@ -160,7 +159,7 @@ export default class EventPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       pointToUpdate,
     );
-    // this.#replaceFormToCard();
+
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
