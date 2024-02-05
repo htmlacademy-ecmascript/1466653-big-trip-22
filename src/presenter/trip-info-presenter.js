@@ -13,8 +13,8 @@ export default class TripInfoPresenter {
     this.#pointsModel = pointsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
-    this.#pointsModel.addObserver(this.#handleModelEvent);
 
+    this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
@@ -34,7 +34,7 @@ export default class TripInfoPresenter {
     this.#tripInfoComponent = new TripInfoView({
       points,
       destinationNames: this.#destinationsModel.getDestinationNames(destinationIds),
-      offersPrice: offers.reduce((total, offer) => (total + offer.price), 0),
+      offersPriceSum: offers.reduce((total, offer) => (total + offer.price), 0),
     });
 
     if (prevTripInfoComponent === null) {

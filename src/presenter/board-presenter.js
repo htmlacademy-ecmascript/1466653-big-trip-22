@@ -47,6 +47,8 @@ export default class BoardPresenter {
     });
 
     this.#pointsModel.addObserver(this.#handlePointsModelEvent);
+    this.#offersModel.addObserver(this.#handlePointsModelEvent);
+    this.#destinationsModel.addObserver(this.#handlePointsModelEvent);
     this.#filterModel.addObserver(this.#handlePointsModelEvent);
   }
 
@@ -81,6 +83,10 @@ export default class BoardPresenter {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.DEFAULT);
     this.#newEventPresenter.init();
+
+    if (this.#noEventsComponent) {
+      remove(this.#noEventsComponent);
+    }
   }
 
   #sortEvents(sortType) {
@@ -102,6 +108,7 @@ export default class BoardPresenter {
 
   #renderSortForm() {
     this.#sortComponent = new SortFormView({
+      currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,
     });
 
@@ -132,16 +139,13 @@ export default class BoardPresenter {
     this.#eventPresenters.clear();
   }
 
-  #clearBoard(resetSortType = false) {
+  #clearBoard() {
     this.#clearEventsList();
     this.#newEventPresenter.destroy();
+    this.#currentSortType = SortType.DEFAULT;
 
     remove(this.#sortComponent);
     remove(this.#loadingComponent);
-
-    if (resetSortType) {
-      this.#currentSortType = SortType.DEFAULT;
-    }
 
     if (this.#noEventsComponent) {
       remove(this.#noEventsComponent);

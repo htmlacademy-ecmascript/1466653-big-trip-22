@@ -1,6 +1,7 @@
 import { render } from './framework/render.js';
 
 import NewEventButtonView from './view/new-event-button-view.js';
+import FailedLoadingMessageView from './view/failed-loading-message-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import TripInfoPresenter from './presenter/trip-info-presenter.js';
@@ -65,10 +66,13 @@ function handleNewEventButtonClick() {
 
 tripInfoPresenter.init();
 filterPresenter.init();
-destinationsModel.init();
-offersModel.init();
 boardPresenter.init();
-pointsModel.init()
+
+Promise.all([
+  destinationsModel.init(),
+  offersModel.init(),
+  pointsModel.init(),
+]).catch(() => render(new FailedLoadingMessageView(), tripEventsContainer))
   .finally(() => {
     render(newEventButtonView, headerMainContainer);
   });

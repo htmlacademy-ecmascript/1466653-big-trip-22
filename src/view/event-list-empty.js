@@ -3,9 +3,9 @@ import { FilterType } from './../helpers/const.js';
 
 const NoEventsText = {
   [FilterType.DEFAULT]: 'Click New Event to create your first point',
-  [FilterType.FUTURE]: 'There are no future points. Click New Event to create a future point',
-  [FilterType.PRESENT]: 'There are no present points',
-  [FilterType.PAST]: 'There are no points in past',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now',
 };
 
 function createEventListEmptyTemplate(filterType) {
