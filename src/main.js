@@ -62,7 +62,6 @@ function handleNewEventFormClose() {
 function handleNewEventButtonClick() {
   boardPresenter.createEvent();
   newEventButtonView.element.disabled = true;
-  // убрать текст-заглушку
 }
 
 tripInfoPresenter.init();

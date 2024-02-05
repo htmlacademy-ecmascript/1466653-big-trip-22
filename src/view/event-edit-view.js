@@ -16,13 +16,23 @@ const defaultPoint = {
 };
 
 function createOfferTypeSelectorsTemplate(offerTypes, isDisabled) {
-  return offerTypes.map((offerType) => `
-  <div class="event__type-item">
-    <input id="event-type-${offerType.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio"
-    name="event-type" value="${offerType.toLowerCase()}" ${ isDisabled ? 'disabled' : ''}>
-    <label class="event__type-label  event__type-label--${offerType.toLowerCase()}" for="event-type-${offerType.toLowerCase()}-1">${offerType}</label>
-  </div>
-  `).join('');
+  return offerTypes.map((offerType) => {
+    const isOfferSelected = offerType.id;
+    return `
+    <div class="event__type-item">
+      <input
+        id="event-type-${offerType.toLowerCase()}-1"
+        class="event__type-input visually-hidden"
+        type="radio"
+        name="event-type"
+        value="${offerType.toLowerCase()}"
+        ${isDisabled ? 'disabled' : ''}
+        ${isOfferSelected ? 'checked' : ''}
+      >
+      <label class="event__type-label  event__type-label--${offerType.toLowerCase()}" for="event-type-${offerType.toLowerCase()}-1">${offerType}</label>
+    </div>
+    `;
+  }).join('');
 }
 
 function createAvailableOffersTemplate(availableOffers, selectedOffers = []) {
@@ -41,8 +51,15 @@ function createAvailableOffersTemplate(availableOffers, selectedOffers = []) {
 
     return `
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-${offerTitle}" value="${offer.id}" ${isOfferSelected ? 'checked' : ''}>
-        <label class="event__offer-label" for="${offer.id}">
+        <input
+          class="event__offer-checkbox  visually-hidden"
+          id="event-offer-${offerTitle}-${offer.id}"
+          type="checkbox"
+          name="event-offer-${offerTitle}"
+          data-id="${offer.id}"
+          ${isOfferSelected ? 'checked' : ''}
+          >
+        <label class="event__offer-label" for="event-offer-${offerTitle}-${offer.id}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
@@ -72,6 +89,10 @@ function createDestinationPhotosTemplate(pictures) {
 
 function createDestinationTemplate(destination) {
   if (!destination) {
+    return '';
+  }
+
+  if (!destination.description && !(destination.pictures.length > 0)) {
     return '';
   }
 
@@ -116,7 +137,15 @@ function createEventEditTemplate(point, allDestinations, allOffers, offerTypes) 
           <label class="event__label  event__type-output" for="event-destination-${pointId}">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${selectedDestination ? he.encode(selectedDestination.name) : ''}" list="destination-list-${pointId}" ${point.isDisabled ? 'disabled' : ''}>
+          <input
+            class="event__input  event__input--destination"
+            id="event-destination-${pointId}"
+            type="text"
+            name="event-destination"
+            value="${selectedDestination ? he.encode(selectedDestination.name) : ''}"
+            list="destination-list-${pointId}"
+            ${point.isDisabled ? 'disabled' : ''}
+          >
           <datalist id="destination-list-${pointId}">
             ${allDestinations.map((item) => `<option value="${item.name}" data-destination-id="${item.id}"></option>`).join('')}
           </datalist>
@@ -189,6 +218,40 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate(this._state, this.#destinations, this.#offers, this.#offerTypes);
   }
 
+  static parsePointToState(point) {
+    return {
+      ...point,
+      isDisabled: false,
+      isDeleting: false,
+      isSaving: false,
+    };
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isDeleting;
+    delete point.isSaving;
+
+    return point;
+  }
+
+  reset(point) {
+    this.updateElement(
+      EventEditView.parsePointToState(point),
+    );
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    this.#datepickerStart.destroy();
+    this.#datepickerEnd.destroy();
+    this.#datepickerStart = null;
+    this.#datepickerEnd = null;
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.event__save-btn').addEventListener('click', this.#onFormSubmit);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteEvent);
@@ -210,42 +273,14 @@ export default class EventEditView extends AbstractStatefulView {
     this.#setCalendarEnd();
   }
 
-  static parsePointToState(point) {
-    return {
-      ...point,
-      isDisabled: false,
-      isDeleting: false,
-      isSaving: false,
-    };
-  }
-
-  static parseStateToPoint(state) {
-    const point = {...state};
-
-    delete point.isDisabled;
-    delete point.isDeleting;
-    delete point.isSaving;
-
-    return point;
-  }
-
-  removeElement() {
-    super.removeElement();
-
-    this.#datepickerStart.destroy();
-    this.#datepickerEnd.destroy();
-    this.#datepickerStart = null;
-    this.#datepickerEnd = null;
-  }
-
   #setCalendarStart () {
     this.#datepickerStart = flatpickr(this.element.querySelectorAll('.event__input--time')[0], {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
       minDate: new Date(),
-      // eslint-disable-next-line camelcase
-      time_24hr: true,
-      onChange: this.#onDateStartChangeHandler,
+      'time_24hr': true,
+      allowInput: true,
+      onChange: this.#onDateStartChange,
     });
   }
 
@@ -254,9 +289,8 @@ export default class EventEditView extends AbstractStatefulView {
       dateFormat: 'd/m/y  H:i',
       enableTime: true,
       minDate: this.#datepickerStart.selectedDates[0] || new Date(),
-      // eslint-disable-next-line camelcase
-      time_24hr: true,
-      onChange: this.#onDateEndChangeHandler,
+      'time_24hr': true,
+      onChange: this.#onDateEndChange,
     });
   }
 
@@ -271,7 +305,6 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   #onTypeChange = (evt) => {
-    evt.preventDefault();
     this.updateElement({
       type: evt.target.value,
       offers: [],
@@ -288,7 +321,7 @@ export default class EventEditView extends AbstractStatefulView {
     }
 
     this.updateElement({
-      offers: selectedOffers,
+      offers: [...selectedOffers],
     });
   };
 
@@ -299,6 +332,10 @@ export default class EventEditView extends AbstractStatefulView {
       this.updateElement({
         destination: selectedDestination.id,
       });
+    } else {
+      this.updateElement({
+        destination: null,
+      });
     }
   };
 
@@ -308,13 +345,12 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  #onDateStartChangeHandler = ([date]) => {
+  #onDateStartChange = ([date]) => {
     this.updateElement({dateFrom: date});
-    this.#datepickerEnd.destroy();
-    this.#setCalendarEnd();
+    this.#datepickerEnd.set('minDate', this._state.dateFrom);
   };
 
-  #onDateEndChangeHandler = ([date]) => {
+  #onDateEndChange = ([date]) => {
     this.updateElement({dateTo: date});
   };
 }

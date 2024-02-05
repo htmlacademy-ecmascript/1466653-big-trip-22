@@ -71,7 +71,7 @@ export default class NewEventPresenter {
   #handleFormSubmit = (point) => {
     this.#handleDataChange(
       UserAction.ADD_EVENT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       point,
     );
   };
