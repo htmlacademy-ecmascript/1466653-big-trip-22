@@ -1,7 +1,6 @@
 import { render } from './framework/render.js';
 
 import NewEventButtonView from './view/new-event-button-view.js';
-import FailedLoadingMessageView from './view/failed-loading-message-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import TripInfoPresenter from './presenter/trip-info-presenter.js';
@@ -57,6 +56,7 @@ const newEventButtonView = new NewEventButtonView({ onClick: handleNewEventButto
 
 function handleNewEventFormClose() {
   newEventButtonView.element.disabled = false;
+  boardPresenter.recoverNoEventsMessage();
 }
 
 function handleNewEventButtonClick() {
@@ -72,7 +72,7 @@ Promise.all([
   destinationsModel.init(),
   offersModel.init(),
   pointsModel.init(),
-]).catch(() => render(new FailedLoadingMessageView(), tripEventsContainer))
+])
   .finally(() => {
     render(newEventButtonView, headerMainContainer);
   });

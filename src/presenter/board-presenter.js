@@ -4,6 +4,7 @@ import EventPresenter from './event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
 import EventListEmptyView from '../view/event-list-empty.js';
 import LoadingMessageView from '../view/loading-message-view.js';
+import FailedLoadingMessageView from '../view/failed-loading-message-view.js';
 import { render, remove } from '../framework/render.js';
 import { filter } from '../helpers/utils.js';
 import { FilterType, SortType, UpdateType, UserAction, TimeLimit } from './../helpers/const.js';
@@ -22,6 +23,7 @@ export default class BoardPresenter {
   #sortComponent = null;
   #noEventsComponent = null;
   #loadingComponent = new LoadingMessageView();
+  #failedLoadingComponent = new FailedLoadingMessageView();
   #currentSortType = SortType.DEFAULT;
   #currentFilter = FilterType.DEFAULT;
   #isLoading = true;
@@ -89,6 +91,12 @@ export default class BoardPresenter {
     }
   }
 
+  recoverNoEventsMessage() {
+    if (this.points.length === 0) {
+      this.#renderNoEventsComponent();
+    }
+  }
+
   #sortEvents(sortType) {
     this.#currentSortType = sortType;
   }
@@ -134,6 +142,10 @@ export default class BoardPresenter {
     render(this.#loadingComponent, this.#mainContainer);
   }
 
+  #renderFailedLoading() {
+    render(this.#failedLoadingComponent, this.#mainContainer);
+  }
+
   #clearEventsList() {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
@@ -146,6 +158,7 @@ export default class BoardPresenter {
 
     remove(this.#sortComponent);
     remove(this.#loadingComponent);
+    remove(this.#failedLoadingComponent);
 
     if (this.#noEventsComponent) {
       remove(this.#noEventsComponent);
@@ -157,6 +170,12 @@ export default class BoardPresenter {
 
     if (this.#isLoading) {
       this.#renderLoading();
+      return;
+    }
+
+    if (!this.#destinationsModel.destinations.length ||
+        !this.#pointsModel.points.length && !this.#offersModel.offers.length) {
+      this.#renderFailedLoading();
       return;
     }
 
