@@ -10,7 +10,7 @@ const sortEventsByTime = (previousEvent, nextEvent) => {
   const previousEventDuration = dayjs(previousEvent.dateFrom).diff((previousEvent.dateTo));
   const nextEventDuration = dayjs(nextEvent.dateFrom).diff((nextEvent.dateTo));
 
-  return (nextEventDuration - previousEventDuration);
+  return (previousEventDuration - nextEventDuration);
 };
 const sortEventsByDate = (previousEvent, nextEvent) => dayjs(previousEvent.dateFrom).diff((nextEvent.dateFrom));
 

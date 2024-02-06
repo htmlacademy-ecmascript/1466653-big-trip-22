@@ -58,7 +58,7 @@ function createAvailableOffersTemplate(availableOffers, selectedOffers = []) {
           name="event-offer-${offerTitle}"
           data-id="${offer.id}"
           ${isOfferSelected ? 'checked' : ''}
-          >
+        >
         <label class="event__offer-label" for="event-offer-${offerTitle}-${offer.id}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -314,10 +314,10 @@ export default class EventEditView extends AbstractStatefulView {
   #onOfferChange = (evt) => {
     let selectedOffers = this._state.offers;
 
-    if (selectedOffers.includes(evt.target.value)) {
-      selectedOffers = selectedOffers.filter((item) => item !== evt.target.value);
+    if (evt.target.checked) {
+      selectedOffers.push((evt.target.dataset.id));
     } else {
-      selectedOffers.push(evt.target.value);
+      selectedOffers = selectedOffers.filter((item) => item !== (evt.target.dataset.id));
     }
 
     this.updateElement({
@@ -341,7 +341,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #onPriceChange = (evt) => {
     this.updateElement({
-      basePrice:  parseInt(evt.target.value, 10) || 0,
+      basePrice: parseInt(evt.target.value, 10) || 0,
     });
   };
 
