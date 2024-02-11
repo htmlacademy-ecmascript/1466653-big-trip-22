@@ -77,6 +77,10 @@ export default class BoardPresenter {
     return this.#offersModel.offers;
   }
 
+  get isFailedLoading() {
+    return this.#destinationsModel.isLoadingFailed || this.#pointsModel.isLoadingFailed || this.#offersModel.isLoadingFailed;
+  }
+
   init() {
     this.#renderBoard();
   }
@@ -166,19 +170,17 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
-    this.#renderSortForm();
-
     if (this.#isLoading) {
       this.#renderLoading();
       return;
     }
 
-    if (!this.#destinationsModel.destinations.length ||
-        !this.#pointsModel.points.length && !this.#offersModel.offers.length) {
+    if (!this.#destinationsModel.destinations.length || this.isFailedLoading) {
       this.#renderFailedLoading();
       return;
     }
 
+    this.#renderSortForm();
     this.#renderEventsList();
   }
 

@@ -4,6 +4,8 @@ import { UpdateType } from './../helpers/const';
 export default class OffersModel extends Observable {
   #offersApiService = null;
   #offers = [];
+  #isLoading = true;
+  #isLoadingFailed = false;
 
   constructor ({ offersApiService }) {
     super();
@@ -16,6 +18,14 @@ export default class OffersModel extends Observable {
 
   get types() {
     return this.#offers.map((offer) => offer.type);
+  }
+
+  get isLoading() {
+    return this.#isLoading;
+  }
+
+  get isLoadingFailed() {
+    return this.#isLoadingFailed;
   }
 
   getByType(type) {
@@ -36,9 +46,13 @@ export default class OffersModel extends Observable {
   async init() {
     try {
       this.#offers = await this.#offersApiService.offers;
+      this.#isLoadingFailed = false;
     } catch(err) {
-      this.#offers = [];
+      this.#isLoadingFailed = true;
+    } finally {
+      this.#isLoading = false;
     }
+
 
     this._notify(UpdateType.INIT);
   }

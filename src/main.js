@@ -76,7 +76,7 @@ Promise.all([
   .finally(() => {
     render(newEventButtonView, headerMainContainer);
 
-    if(destinationsModel.destinations.length < 1) {
+    if(boardPresenter.isFailedLoading) {
       newEventButtonView.element.disabled = true;
     }
   });

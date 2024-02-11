@@ -4,6 +4,8 @@ import { UpdateType } from './../helpers/const';
 export default class DestinationsModel extends Observable {
   #destinations = [];
   #destinationsApiService = null;
+  #isLoading = true;
+  #isLoadingFailed = false;
 
   constructor ({ destinationsApiService }) {
     super();
@@ -12,6 +14,14 @@ export default class DestinationsModel extends Observable {
 
   get destinations() {
     return this.#destinations;
+  }
+
+  get isLoading() {
+    return this.#isLoading;
+  }
+
+  get isLoadingFailed() {
+    return this.#isLoadingFailed;
   }
 
   getById(id) {
@@ -29,8 +39,11 @@ export default class DestinationsModel extends Observable {
   async init() {
     try {
       this.#destinations = await this.#destinationsApiService.destinations;
+      this.#isLoadingFailed = false;
     } catch(err) {
-      this.#destinations = [];
+      this.#isLoadingFailed = true;
+    } finally {
+      this.#isLoading = false;
     }
 
     this._notify(UpdateType.INIT);
