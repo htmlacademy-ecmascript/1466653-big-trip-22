@@ -196,9 +196,9 @@ export default class EventEditView extends AbstractStatefulView {
   #offerTypes = [];
   #datepickerStart = null;
   #datepickerEnd = null;
-  #handleSaveClick = null;
-  #handleResetClick = null;
-  #handleDeleteClick = null;
+  #onSaveClick = null;
+  #onResetClick = null;
+  #onDeleteClick = null;
 
   constructor({ point = defaultPoint, destinations, offers, offerTypes, onFormSubmit, onFormClose, onEventDelete }) {
     super();
@@ -207,9 +207,9 @@ export default class EventEditView extends AbstractStatefulView {
     this.#destinations = destinations;
     this.#offers = offers;
     this.#offerTypes = offerTypes;
-    this.#handleSaveClick = onFormSubmit;
-    this.#handleResetClick = onFormClose;
-    this.#handleDeleteClick = onEventDelete;
+    this.#onSaveClick = onFormSubmit;
+    this.#onResetClick = onFormClose;
+    this.#onDeleteClick = onEventDelete;
 
     this._restoreHandlers();
   }
@@ -263,7 +263,7 @@ export default class EventEditView extends AbstractStatefulView {
     const rollupBtn = this.element.querySelector('.event__rollup-btn');
 
     if(rollupBtn) {
-      rollupBtn.addEventListener('click', this.#handleResetClick);
+      rollupBtn.addEventListener('click', this.#onResetClick);
     }
     if(offersSelector) {
       offersSelector.addEventListener('change', this.#onOfferChange);
@@ -296,12 +296,12 @@ export default class EventEditView extends AbstractStatefulView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#handleSaveClick(EventEditView.parseStateToPoint(this._state));
+    this.#onSaveClick(EventEditView.parseStateToPoint(this._state));
   };
 
   #onDeleteEvent = (evt) => {
     evt.preventDefault();
-    this.#handleDeleteClick(EventEditView.parseStateToPoint(this._state));
+    this.#onDeleteClick(EventEditView.parseStateToPoint(this._state));
   };
 
   #onTypeChange = (evt) => {

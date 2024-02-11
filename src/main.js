@@ -36,7 +36,7 @@ const boardPresenter = new BoardPresenter({
   destinationsModel,
   offersModel,
   filterModel,
-  onNewEventDestroy: handleNewEventFormClose,
+  onNewEventDestroy: onNewEventFormClose,
 });
 
 const filterPresenter = new FilterPresenter({
@@ -52,14 +52,14 @@ const tripInfoPresenter = new TripInfoPresenter({
   offersModel,
 });
 
-const newEventButtonView = new NewEventButtonView({ onClick: handleNewEventButtonClick });
+const newEventButtonView = new NewEventButtonView({ onClick: onNewEventButtonClick });
 
-function handleNewEventFormClose() {
+function onNewEventFormClose() {
   newEventButtonView.element.disabled = false;
   boardPresenter.recoverNoEventsMessage();
 }
 
-function handleNewEventButtonClick() {
+function onNewEventButtonClick() {
   boardPresenter.createEvent();
   newEventButtonView.element.disabled = true;
 }
@@ -75,4 +75,8 @@ Promise.all([
 ])
   .finally(() => {
     render(newEventButtonView, headerMainContainer);
+
+    if(boardPresenter.isFailedLoading) {
+      newEventButtonView.element.disabled = true;
+    }
   });

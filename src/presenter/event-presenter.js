@@ -17,15 +17,15 @@ export default class EventPresenter {
   #offersModel = null;
   #eventComponent = null;
   #eventEditComponent = null;
-  #handleDataChange = null;
-  #handleModeChange = null;
+  #onDataChange = null;
+  #onModeChange = null;
 
   constructor({container, destinationsModel, offersModel, onDataChange, onModeChange}) {
     this.#container = container;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
-    this.#handleDataChange = onDataChange;
-    this.#handleModeChange = onModeChange;
+    this.#onDataChange = onDataChange;
+    this.#onModeChange = onModeChange;
   }
 
   init(point) {
@@ -41,9 +41,9 @@ export default class EventPresenter {
 
       onEditClick: () => {
         this.#replaceCardToForm();
-        document.addEventListener('keydown', this.#escKeyDownHandler);
+        document.addEventListener('keydown', this.#onEscKeyDown);
       },
-      onFavoriteClick: this.#handleFavoriteClick,
+      onFavoriteClick: this.#onFavoriteClick,
     });
 
     this.#eventEditComponent = new EventEditView({
@@ -52,9 +52,9 @@ export default class EventPresenter {
       offers: this.#offersModel.offers,
       offerTypes: this.#offersModel.types,
 
-      onFormSubmit: this.#handleFormSubmit,
-      onFormClose: this.#handleFormClose,
-      onEventDelete: this.#handleEventDelete,
+      onFormSubmit: this.#onFormSubmit,
+      onFormClose: this.#onFormClose,
+      onEventDelete: this.#onEventDelete,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -124,7 +124,7 @@ export default class EventPresenter {
 
   #replaceCardToForm() {
     replace(this.#eventEditComponent, this.#eventComponent);
-    this.#handleModeChange();
+    this.#onModeChange();
     this.#mode = Mode.EDIT;
   }
 
@@ -133,50 +133,50 @@ export default class EventPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
-  #escKeyDownHandler = (evt) => {
+  #onEscKeyDown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
       this.#eventEditComponent.reset(this.#point);
       this.#replaceFormToCard();
 
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      document.removeEventListener('keydown', this.#onEscKeyDown);
     }
   };
 
-  #handleFavoriteClick = () => {
-    this.#handleDataChange(
+  #onFavoriteClick = () => {
+    this.#onDataChange(
       UserAction.UPDATE_EVENT,
       UpdateType.PATCH,
       {...this.#point, isFavorite: !this.#point.isFavorite},
     );
   };
 
-  #handleFormSubmit = (pointToUpdate) => {
+  #onFormSubmit = (pointToUpdate) => {
     const isMinorUpdate =
       !isDatesEqual(this.#point.dateFrom, pointToUpdate.dateFrom) ||
       this.#point.basePrice !== pointToUpdate.basePrice ||
       !isDurationEqual(this.#point, pointToUpdate);
-    this.#handleDataChange(
+    this.#onDataChange(
       UserAction.UPDATE_EVENT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       pointToUpdate,
     );
 
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    document.removeEventListener('keydown', this.#onEscKeyDown);
   };
 
-  #handleEventDelete = (point) => {
-    this.#handleDataChange(
+  #onEventDelete = (point) => {
+    this.#onDataChange(
       UserAction.DELETE_EVENT,
       UpdateType.MINOR,
       point,
     );
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    document.removeEventListener('keydown', this.#onEscKeyDown);
   };
 
-  #handleFormClose = () => {
+  #onFormClose = () => {
     this.#eventEditComponent.reset(this.#point);
     this.#replaceFormToCard();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    document.removeEventListener('keydown', this.#onEscKeyDown);
   };
 }
