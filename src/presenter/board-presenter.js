@@ -2,7 +2,7 @@ import SortFormView from '../view/sort-form-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventPresenter from './event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
-import EventListEmptyView from '../view/event-list-empty.js';
+import EventListEmptyView from '../view/event-list-empty-view.js';
 import LoadingMessageView from '../view/loading-message-view.js';
 import FailedLoadingMessageView from '../view/failed-loading-message-view.js';
 import { render, remove } from '../framework/render.js';

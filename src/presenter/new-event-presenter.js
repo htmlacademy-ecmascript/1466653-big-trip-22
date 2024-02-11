@@ -8,15 +8,15 @@ export default class NewEventPresenter {
   #offersModel = null;
   #destinationsModel = null;
   #eventEditComponent = null;
-  #handleDataChange = null;
-  #handleDestroy = null;
+  #onDataChange = null;
+  #onDestroy = null;
 
   constructor({container, offersModel, destinationsModel, onDataChange, onDestroy}) {
     this.#container = container;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
-    this.#handleDataChange = onDataChange;
-    this.#handleDestroy = onDestroy;
+    this.#onDataChange = onDataChange;
+    this.#onDestroy = onDestroy;
   }
 
   init() {
@@ -28,14 +28,14 @@ export default class NewEventPresenter {
       destinations: this.#destinationsModel.destinations,
       offers: this.#offersModel.offers,
       offerTypes: this.#offersModel.types,
-      onFormSubmit: this.#handleFormSubmit,
-      onFormClose: this.#handleDeleteClick,
-      onEventDelete: this.#handleDeleteClick,
+      onFormSubmit: this.#onFormSubmit,
+      onFormClose: this.#onDeleteClick,
+      onEventDelete: this.#onDeleteClick,
     });
 
     render(this.#eventEditComponent, this.#container, RenderPosition.AFTERBEGIN);
 
-    document.addEventListener('keydown', this.#escKeyDownHandler);
+    document.addEventListener('keydown', this.#onEscKeyDown);
   }
 
   setSaving() {
@@ -62,25 +62,25 @@ export default class NewEventPresenter {
       return;
     }
 
-    this.#handleDestroy();
+    this.#onDestroy();
     remove(this.#eventEditComponent);
     this.#eventEditComponent = null;
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    document.removeEventListener('keydown', this.#onEscKeyDown);
   }
 
-  #handleFormSubmit = (point) => {
-    this.#handleDataChange(
+  #onFormSubmit = (point) => {
+    this.#onDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MAJOR,
       point,
     );
   };
 
-  #handleDeleteClick = () => {
+  #onDeleteClick = () => {
     this.destroy();
   };
 
-  #escKeyDownHandler = (evt) => {
+  #onEscKeyDown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
       this.destroy();

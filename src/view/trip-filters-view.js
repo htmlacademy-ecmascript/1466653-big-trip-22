@@ -26,22 +26,22 @@ function createTripFiltersTemplate(filters, activeFilter) {
 export default class TripFiltersView extends AbstractView {
   #filters = [];
   #activeFilterType = null;
-  #handleFilterTypeChange = null;
+  #onFilterTypeChange = null;
 
   constructor({ filters, currentFilterType, onFilterTypeChange }) {
     super();
     this.#filters = filters;
     this.#activeFilterType = currentFilterType;
-    this.#handleFilterTypeChange = onFilterTypeChange;
+    this.#onFilterTypeChange = onFilterTypeChange;
 
-    this.element.addEventListener('change', this.#filterTypeChangeHandler);
+    this.element.addEventListener('change', this.#onInputChange);
   }
 
   get template() {
     return createTripFiltersTemplate(this.#filters, this.#activeFilterType);
   }
 
-  #filterTypeChangeHandler = (evt) => {
-    this.#handleFilterTypeChange(evt.target.value);
+  #onInputChange = (evt) => {
+    this.#onFilterTypeChange(evt.target.value);
   };
 }
